@@ -1,5 +1,17 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Configuración local de VSCode
+.vscode/
+node_modules/
+
+# Archivos de metadata de recursos
+._*
 # Compiled output
 /dist
 /tmp
