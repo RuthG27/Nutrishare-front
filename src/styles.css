@@ -19,7 +19,7 @@
   src: url('assets/fonts/more_sugar/MoreSugar-Regular.ttf') format('truetype');
 
 }
-
+/*Establecer fuentes*/
 body{
     background-color: #C1FF72;
     font-family: 'FuenteCuerpo', sans-serif;
@@ -27,4 +27,16 @@ body{
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'FuenteTitulos', serif;
+}
+
+
+/*Fijar Footer al final*/
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body{
+  flex: 1;
 }
