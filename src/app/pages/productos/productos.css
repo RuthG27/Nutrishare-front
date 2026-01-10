@@ -1,0 +1,49 @@
+#productos{
+
+
+}
+
+
+
+#contenido{
+    background-image: url('/img/fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 45vh;
+    margin: 0 auto;
+    margin-top: 20px;
+    
+
+}
+
+
+#contenido h1{
+    font-size: 5rem;
+    color: #ffffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    
+}
+
+#contenido #texto{
+    width: 90%;
+    margin: 0 auto;
+    background-color: transparent;
+    
+}
+
+#contenido div{
+    background-color: #C1FF72;
+    padding: 30px;
+    width: 50%;
+    border-radius: 2vw;
+}
+
+#productosnaturales{
+    background-color: black;
+    color: #ffffffff;
+    text-align: center;
+
+    
+}
+
