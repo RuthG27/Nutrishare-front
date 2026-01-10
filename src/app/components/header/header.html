@@ -1,8 +1,31 @@
 <header>
+
+    <div id="logo">
+
+        <img src="/img/logo2.png" alt="logo">
+        <h6>NutriShare</h6>
+
+    </div>
     <nav>
-        <a routerLink="/">Home</a>
-        <a routerLink="/Sobre nosotros">Sobre nosotros</a>
-        <a routerLink="/Recetas">Recetas</a>
-        <a routerLink="/Productos">Productos</a>
+
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        <a routerLink="/Sobre nosotros" routerLinkActive="active">Sobre nosotros</a>
+        <a routerLink="/Recetas" routerLinkActive="active">Recetas</a>
+        <a routerLink="/Productos" routerLinkActive="active">Productos</a>
+
+
     </nav>
+
+    <div id="sesion">
+            <a href=""><strong>Iniciar sesión</strong></a>
+            <a href="">Registrarse</a>
+    </div>
+
+    <div id="usuario">
+
+        <img src="/img/usuario.png" alt="usuario">
+        <img src="/img/carrito-de-compras.png" alt="carrito">
+
+    </div>
+
 </header>

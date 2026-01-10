@@ -1,0 +1,54 @@
+header{
+    
+    background-color: #ffffff;
+    width: 90%;
+    margin: 20px auto 0 auto;
+    border-radius: 1.5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+#logo{
+    display: flex;
+    align-items: center;
+}
+#logo img{
+    width: 10vh;
+}
+
+nav{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap:200px;
+}
+img{
+
+    width: 5vh;
+    
+}
+
+nav a{
+    text-decoration: none;
+    color: black;
+}
+
+nav a.active{
+    font-weight: 600;
+}
+
+h6{
+    font-size: 200%;
+}
+
+#sesion a{
+    text-decoration: none;
+    display: block;
+    color: #858383;
+}
+
+#usuario img{
+    margin-left: 30px;
+}

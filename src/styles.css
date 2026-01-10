@@ -4,3 +4,27 @@
     margin: 0;
     padding: 0;
 }
+
+
+/* Fuente principal para todo el body */
+@font-face {
+  font-family: 'FuenteCuerpo';
+  src: url('assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+}
+
+/* Fuente para los títulos */
+@font-face {
+  font-family: 'FuenteTitulos';
+  src: url('assets/fonts/more_sugar/MoreSugar-Regular.ttf') format('truetype');
+
+}
+
+body{
+    background-color: #C1FF72;
+    font-family: 'FuenteCuerpo', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'FuenteTitulos', serif;
+}
