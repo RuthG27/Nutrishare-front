@@ -7,9 +7,9 @@
 
         <nav class="nav-links">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-            <a routerLink="/Sobre nosotros" routerLinkActive="active">Sobre nosotros</a>
-            <a routerLink="/Recetas" routerLinkActive="active">Recetas</a>
-            <a routerLink="/Productos" routerLinkActive="active">Productos</a>
+            <a routerLink="/sobre-nosotros" routerLinkActive="active">Sobre nosotros</a>
+            <a routerLink="/recetas" routerLinkActive="active">Recetas</a>
+            <a routerLink="/productos" routerLinkActive="active">Productos</a>
         </nav>
 
         <div class="session">
@@ -21,9 +21,9 @@
             <button type="button" aria-label="Perfil">
                 <img src="/img/usuario.png" alt="usuario" />
             </button>
-            <button type="button" aria-label="Carrito">
+            <a class="cart-link" routerLink="/carrito" aria-label="carrito">
                 <img src="/img/carrito-de-compras.png" alt="carrito" />
-            </button>
+            </a>
         </div>
     </div>
 </header>

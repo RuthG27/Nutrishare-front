@@ -1,1 +1,42 @@
-<p>carrito works!</p>
+<div class="cart-wrapper">
+    <section class="cart-page">
+        <div class="cart-left">
+            <h1>Mi compra</h1>
+            <ul class="cart-list">
+                <li *ngFor="let item of items">
+                    <div class="product">
+                        <img [src]="item.image" [alt]="item.name" />
+                        <div>
+                            <strong>{{ item.name }}</strong>
+                            <span>{{ item.description }}</span>
+                        </div>
+                    </div>
+                    <div class="qty">
+                        <span>{{ item.quantity }}</span>
+                        <i class="icon-chevron"></i>
+                    </div>
+                    <button class="remove" type="button" aria-label="Eliminar">✕</button>
+                </li>
+            </ul>
+        </div>
+
+        <aside class="cart-summary">
+            <p class="order">Pedido: <span>{{ orderId }}</span></p>
+
+            <div class="line">
+                <span>Subtotal:</span>
+                <strong>{{ subtotal | number:'1.2-2' }}€</strong>
+            </div>
+            <div class="line">
+                <span>Envío:</span>
+                <strong>{{ shippingCost | number:'1.2-2' }}€</strong>
+            </div>
+            <div class="line total">
+                <span>Total:</span>
+                <strong>{{ total | number:'1.2-2' }}€</strong>
+            </div>
+
+            <button class="checkout" type="button">Realizar pedido</button>
+        </aside>
+    </section>
+</div>

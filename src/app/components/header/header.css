@@ -77,7 +77,8 @@
   gap: 0.4rem;
 }
 
-.actions button {
+.actions button,
+.actions .cart-link {
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -87,6 +88,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.actions .cart-link {
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.actions .cart-link:focus-visible,
+.actions .cart-link:hover {
+  border-color: #111;
 }
 
 .actions img {
