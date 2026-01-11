@@ -1,54 +1,111 @@
-header{
-    
-    background-color: #ffffff;
-    width: 90%;
-    margin: 20px auto 0 auto;
-    border-radius: 1.5vw;
-    display: flex;
+.main-header {
+  width: 100%;
+  background: #c1ff72;
+  padding: 26px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar {
+  width: min(1200px, 90vw);
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 0.8rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  font-family: 'FuenteTitulos', cursive;
+}
+
+.brand img {
+  width: 52px;
+  height: 52px;
+}
+
+.brand h1 {
+  font-size: 1.9rem;
+  color: #111;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #1b1b1b;
+  font-weight: 500;
+}
+
+.nav-links a.active {
+  font-weight: 700;
+}
+
+.session {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  line-height: 1.1;
+  gap: 0.2rem;
+}
+
+.session a {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: #8d8d8d;
+}
+
+.session .login {
+  font-weight: 700;
+  color: #1b1b1b;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.actions button {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: #e6e6e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.actions img {
+  width: 26px;
+  height: 26px;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-links {
+    flex-basis: 100%;
     justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-}
+  }
 
-#logo{
-    display: flex;
-    align-items: center;
-}
-#logo img{
-    width: 10vh;
-}
-
-nav{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap:200px;
-}
-img{
-
-    width: 5vh;
-    
-}
-
-nav a{
-    text-decoration: none;
-    color: black;
-}
-
-nav a.active{
-    font-weight: 800;
-}
-
-h6{
-    font-size: 200%;
-}
-
-#sesion a{
-    text-decoration: none;
-    display: block;
-    color: #858383;
-}
-
-#usuario img{
-    margin-left: 30px;
+  .session {
+    text-align: center;
+  }
 }

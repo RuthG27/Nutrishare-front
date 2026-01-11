@@ -1,31 +1,29 @@
-<header>
+<header class="main-header">
+    <div class="navbar">
+        <div id="logo" class="brand">
+            <img src="/img/logo-fondo-blanco.png" alt="logo NutriShare" />
+            <h2>NutriShare</h2>
+        </div>
 
-    <div id="logo">
+        <nav class="nav-links">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+            <a routerLink="/Sobre nosotros" routerLinkActive="active">Sobre nosotros</a>
+            <a routerLink="/Recetas" routerLinkActive="active">Recetas</a>
+            <a routerLink="/Productos" routerLinkActive="active">Productos</a>
+        </nav>
 
-        <img src="/img/logo-fondo-blanco.png" alt="logo">
-        <h6>NutriShare</h6>
+        <div class="session">
+            <a class="login" routerLink="/login" routerLinkActive="active">Iniciar sesión</a>
+            <a class="register" routerLink="/registro" routerLinkActive="active">Registrarse</a>
+        </div>
 
+        <div class="actions">
+            <button type="button" aria-label="Perfil">
+                <img src="/img/usuario.png" alt="usuario" />
+            </button>
+            <button type="button" aria-label="Carrito">
+                <img src="/img/carrito-de-compras.png" alt="carrito" />
+            </button>
+        </div>
     </div>
-    <nav>
-
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-        <a routerLink="/Sobre nosotros" routerLinkActive="active">Sobre nosotros</a>
-        <a routerLink="/Recetas" routerLinkActive="active">Recetas</a>
-        <a routerLink="/Productos" routerLinkActive="active">Productos</a>
-
-
-    </nav>
-
-    <div id="sesion">
-            <a href=""><strong>Iniciar sesión</strong></a>
-            <a href="">Registrarse</a>
-    </div>
-
-    <div id="usuario">
-
-        <img src="/img/usuario.png" alt="usuario">
-        <img src="/img/carrito-de-compras.png" alt="carrito">
-
-    </div>
-
 </header>
