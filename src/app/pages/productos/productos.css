@@ -47,3 +47,50 @@
     
 }
 
+/*ESTILOS DE LA TARJETA DE CADA PRODUCTO*/
+
+#contenedorProductos{
+
+    margin-top: 20px;
+    display: grid;                 
+    grid-template-columns: repeat(auto-fit, minmax(250px, auto)); 
+    /*Esto lo he usado porque sino no conseguia que quedase centrado y que ocupase un espacio determinado*/
+    /*Si no lo usaba quedaba centrado pero sin margenes*/
+    column-gap: 50px;
+    row-gap: 50px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.cardProductos{
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 5%;
+    text-align: center;
+
+
+}
+
+.cardProductos img{
+    border-radius: 50%;
+    height: 10vw;
+    width: 10vw;
+}
+
+button{
+    background-color:#D9D9D9;
+    border: none;
+    border-radius: 2vw;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: 'FuenteTitulos', serif;
+}
+
+button:hover{
+    background-color: black;
+    color: #ffffff;
+}
+

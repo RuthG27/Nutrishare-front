@@ -23,6 +23,21 @@
     
     <div id="contenedorProductos">
 
+        @for(producto of productos; track producto.id){
+
+            <div class="cardProductos">
+
+                <img [src]="producto.img" [alt]="producto.nombre">
+                <p><strong>{{producto.nombre}}</strong></p>
+                <p>{{producto.categoria}}</p>
+
+                <button>Añadir al carrito</button>
+
+
+            </div>
+
+        }
+
     </div>
 
 
