@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Receta } from '../../services/recetas';
+import { Recetas } from '../../services/recetas';
 
 @Component({
   selector: 'app-recetas',
@@ -6,6 +8,12 @@ import { Component } from '@angular/core';
   templateUrl: './recetas.html',
   styleUrl: './recetas.css',
 })
-export class Recetas {
+export class RecetasComponent {
+
+  recetas : Receta[] = [];
+
+  constructor(private receta:Recetas){
+    this.recetas = this.receta.getReceta();
+  }
 
 }

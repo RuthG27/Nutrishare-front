@@ -1,1 +1,21 @@
-<p>recetas works!</p>
+<div id="recetas">
+
+    <h1>Nuevas recetas:</h1>
+
+    <div class="contenedorRecetas">
+
+       @for (receta of recetas;track receta.id){
+
+            <div class="cardReceta">
+                <img [src]="receta.imagen" [alt]="receta.nombre">
+                <h3>{{receta.nombre}}</h3>
+                <p><strong>{{receta.puntuacion}}</strong> <i class="fas fa-star star"></i></p>
+                <button>Ver receta</button>
+
+            </div>
+
+       }
+
+    </div>
+
+</div>
