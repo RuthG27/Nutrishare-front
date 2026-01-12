@@ -23,13 +23,15 @@
     
     <div id="contenedorProductos">
 
-        @for(producto of productos; track producto.id){
+        @for(producto of productos; track producto._id){
 
             <div class="cardProductos">
 
                 <img [src]="producto.img" [alt]="producto.nombre">
                 <p><strong>{{producto.nombre}}</strong></p>
                 <p>{{producto.categoria}}</p>
+                <br>
+                <p class="precio">{{ producto.precio}} €/u.</p>
 
                 <button>Añadir al carrito</button>
 

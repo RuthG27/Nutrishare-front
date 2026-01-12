@@ -3,6 +3,7 @@ import { Producto } from '../../services/productos';
 import { Productos } from '../../services/productos';
 
 
+
 @Component({
   selector: 'app-productos',
   imports: [],
