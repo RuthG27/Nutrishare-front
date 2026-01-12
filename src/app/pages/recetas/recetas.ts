@@ -13,7 +13,7 @@ export class RecetasComponent {
   recetas : Receta[] = [];
 
   constructor(private receta:Recetas){
-    this.recetas = this.receta.getReceta();
+    this.recetas = this.receta.getRecetas();
   }
 
 }

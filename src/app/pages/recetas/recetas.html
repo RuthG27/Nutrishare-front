@@ -4,10 +4,10 @@
 
     <div class="contenedorRecetas">
 
-       @for (receta of recetas;track receta.id){
+       @for (receta of recetas;track receta._id){
 
             <div class="cardReceta">
-                <img [src]="receta.imagen" [alt]="receta.nombre">
+                <img [src]="receta.img" [alt]="receta.nombre">
                 <h3>{{receta.nombre}}</h3>
                 <p><strong>{{receta.puntuacion}}</strong> <i class="fas fa-star star"></i></p>
                 <button>Ver receta</button>
