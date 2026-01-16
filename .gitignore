@@ -8,6 +8,7 @@
 
 # Configuración local de VSCode
 .vscode/
+.windsurf/
 node_modules/
 
 # Archivos de metadata de recursos

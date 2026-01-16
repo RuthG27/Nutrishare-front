@@ -12,15 +12,10 @@
             <a routerLink="/productos" routerLinkActive="active">Productos</a>
         </nav>
 
-        <div class="session">
-            <a class="login" routerLink="/login" routerLinkActive="active">Iniciar sesión</a>
-            <a class="register" routerLink="/registro" routerLinkActive="active">Registrarse</a>
-        </div>
-
         <div class="actions">
-            <button type="button" aria-label="Perfil">
+            <a routerLink="/login" aria-label="Perfil">
                 <img src="/img/usuario.png" alt="usuario" />
-            </button>
+            </a>
             <a class="cart-link" routerLink="/carrito" aria-label="carrito">
                 <img src="/img/carrito-de-compras.png" alt="carrito" />
             </a>
