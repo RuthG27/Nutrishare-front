@@ -3,26 +3,43 @@
         <form class="register-form" (submit)="onSubmit($event)">
             <h2>Registro</h2>
 
-            <label class="sr-only" for="name">Nombre completo</label>
-            <input id="name" name="name" type="text" placeholder="nombre completo" required />
+            <label class="sr-only" for="userName">Nombre de usuario</label>
+            <input id="userName" name="userName" type="text" placeholder="nombre de usuario"
+                [(ngModel)]="registerForm.userName" required pattern="[A-Za-z\s]+" minlength="2" />
 
             <label class="sr-only" for="email">Correo electrónico</label>
-            <input id="email" name="email" type="email" placeholder="correo@gmail.com" required />
+            <input id="email" name="email" type="email" placeholder="correo@gmail.com" [(ngModel)]="registerForm.email"
+                required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
 
             <label class="sr-only" for="password">Contraseña</label>
-            <input id="password" name="password" type="password" placeholder="contraseña" required />
+            <input id="password" name="password" type="password" placeholder="contraseña"
+                [(ngModel)]="registerForm.password" required minlength="6" />
 
             <label class="checkbox">
                 <input type="checkbox" required />
                 <span>Acepto los <a href="#">Términos y Condiciones</a></span>
             </label>
 
+            @if (errorMessage) {
+            <div class="error-message">
+                {{ errorMessage }}
+            </div>
+            }
+
+            @if (successMessage) {
+            <div class="success-message">
+                {{ successMessage }}
+            </div>
+            }
+
             <p class="hint">
                 ¿Tienes cuenta?
                 <a routerLink="/login">Inicia sesión.</a>
             </p>
 
-            <button type="submit">Crear cuenta</button>
+            <button type="submit" [disabled]="isLoading">
+                {{ isLoading ? 'Creando cuenta...' : 'Crear cuenta' }}
+            </button>
         </form>
     </div>
 </section>

@@ -1,20 +1,36 @@
 <section class="login-page">
   <div class="poster">
-    <form class="login-form">
+    <form class="login-form" (submit)="onSubmit()">
       <h2>Iniciar sesión</h2>
 
       <label class="sr-only" for="email">Correo electrónico</label>
-      <input id="email" name="email" type="email" placeholder="correo@gmail.com" required />
+      <input id="email" name="email" type="email" placeholder="correo@gmail.com" [(ngModel)]="loginForm.email" required
+        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
 
       <label class="sr-only" for="password">Contraseña</label>
-      <input id="password" name="password" type="password" placeholder="contraseña" required />
+      <input id="password" name="password" type="password" placeholder="contraseña" [(ngModel)]="loginForm.password"
+        required minlength="6" />
+
+      @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+      }
+
+      @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+      </div>
+      }
 
       <p class="hint">
         ¿No tienes cuenta?
         <a routerLink="/registro">Regístrate.</a>
       </p>
 
-      <button type="submit">Entrar</button>
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Iniciando sesión...' : 'Entrar' }}
+      </button>
     </form>
   </div>
 </section>
