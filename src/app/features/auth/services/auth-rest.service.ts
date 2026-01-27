@@ -5,6 +5,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { environment } from '../../../../environments/environment';
 
 const ACCESS_TOKEN_KEY = 'access_token';
+const USER_DATA_KEY = 'user_data';
 
 @Injectable({
   providedIn: 'root',
@@ -38,12 +39,12 @@ export class AuthRestService implements CanActivate {
   }
 
   register(registerData: any) {
-    const { userName, email, password } = registerData;
+    const { name, email, password } = registerData;
 
     return this.http.post(
       this.baseUrl + '/auth/register',
       {
-        userName,
+        name,
         email,
         password,
       },
@@ -83,15 +84,28 @@ export class AuthRestService implements CanActivate {
   }
 
   storeAccessToken(res: HttpResponse<any>) {
-    const accessToken = res.headers.get('Authorization');
+    const accessToken = res.body?.data?.token;
     if (accessToken) {
       localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
       this.loginEmitter.emit(true);
     }
   }
 
+  storeUserData(res: HttpResponse<any>) {
+    const userData = res.body?.data?.user;
+    if (userData) {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+    }
+  }
+
+  getUserData() {
+    const userData = localStorage.getItem(USER_DATA_KEY);
+    return userData ? JSON.parse(userData) : null;
+  }
+
   logout() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(USER_DATA_KEY);
     this.loginEmitter.emit(false);
   }
 
@@ -106,14 +120,6 @@ export class AuthRestService implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     switch (state.url) {
-      case '/booking': {
-        if (this.isLogged()) {
-          return true;
-        } else {
-          this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-          return false;
-        }
-      }
       case '/login':
       case '/registro': {
         if (this.isLogged()) {

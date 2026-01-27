@@ -16,7 +16,7 @@ type CartItem = {
   templateUrl: './carrito.html',
   styleUrl: './carrito.css',
 })
-export class Carrito {
+export class CarritoComponent {
   protected readonly orderId = '8754873598';
   protected readonly shippingCost = 3.95;
   protected readonly items: CartItem[] = [

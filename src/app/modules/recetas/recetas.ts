@@ -9,11 +9,9 @@ import { Recetas } from '../../services/recetas';
   styleUrl: './recetas.css',
 })
 export class RecetasComponent {
+  recetas: Receta[] = [];
 
-  recetas : Receta[] = [];
-
-  constructor(private receta:Recetas){
+  constructor(private receta: Recetas) {
     this.recetas = this.receta.getRecetas();
   }
-
 }

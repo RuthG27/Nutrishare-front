@@ -11,7 +11,7 @@ import { AuthModel } from '../../../features/auth/models/auth.model';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class LoginComponent {
   loginForm: AuthModel = {
     email: '',
     password: '',

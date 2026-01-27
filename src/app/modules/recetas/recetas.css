@@ -1,0 +1,53 @@
+#recetas {
+  width: 90%;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  border-radius: 32px;
+  padding: 3rem;
+}
+
+.contenedorRecetas {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, auto));
+  /*Esto lo he usado porque sino no conseguia que quedase centrado y que ocupase un espacio determinado*/
+  /*Si no lo usaba quedaba centrado pero sin margenes*/
+  column-gap: 50px;
+  row-gap: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardReceta {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5%;
+  text-align: center;
+  border: 2px solid #c1ff72;
+  box-shadow: 0 2px 30px #c1ff72;
+}
+
+.cardReceta img {
+  border-radius: 50%;
+  height: 10vw;
+  width: 10vw;
+}
+.star {
+  color: gold;
+  margin-left: 0.5rem;
+}
+button {
+  background-color: black;
+  color: #ffffff;
+  border: none;
+  border-radius: 2vw;
+  padding: 10px;
+  margin-top: 10px;
+  font-family: 'FuenteTitulos', serif;
+}
+
+button:hover {
+  background-color: #c1ff72;
+  color: black;
+}

@@ -10,9 +10,9 @@ import { AuthRestService } from '../../../features/auth/services/auth-rest.servi
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {
+export class RegisterComponent {
   registerForm = {
-    userName: '',
+    name: '',
     email: '',
     password: '',
   };
@@ -28,7 +28,7 @@ export class Register {
   onSubmit(event: Event) {
     event.preventDefault();
 
-    if (!this.registerForm.userName || !this.registerForm.email || !this.registerForm.password) {
+    if (!this.registerForm.name || !this.registerForm.email || !this.registerForm.password) {
       this.errorMessage = 'Por favor, completa todos los campos';
       return;
     }
@@ -44,11 +44,12 @@ export class Register {
 
     this.authService.register(this.registerForm).subscribe({
       next: (response) => {
+        this.authService.storeAccessToken(response);
         this.successMessage = '¡Cuenta creada con éxito!';
         this.isLoading = false;
 
         setTimeout(() => {
-          this.router.navigate(['/login']);
+          this.router.navigate(['/']);
         }, 2000);
       },
       error: (error) => {
