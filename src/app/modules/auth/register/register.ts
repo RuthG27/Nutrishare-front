@@ -45,6 +45,7 @@ export class RegisterComponent {
     this.authService.register(this.registerForm).subscribe({
       next: (response) => {
         this.authService.storeAccessToken(response);
+        this.authService.storeUserData(response);
         this.successMessage = '¡Cuenta creada con éxito!';
         this.isLoading = false;
 

@@ -13,6 +13,7 @@ const USER_DATA_KEY = 'user_data';
 export class AuthRestService implements CanActivate {
   private baseUrl = environment.url_api;
   @Output() loginEmitter = new EventEmitter<boolean>();
+  @Output() userDataEmitter = new EventEmitter<any>();
 
   constructor(
     private http: HttpClient,
@@ -87,15 +88,39 @@ export class AuthRestService implements CanActivate {
     const accessToken = res.body?.data?.token;
     if (accessToken) {
       localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-      this.loginEmitter.emit(true);
+      // No emitir aquí, esperar a storeUserData
     }
   }
 
   storeUserData(res: HttpResponse<any>) {
-    const userData = res.body?.data?.user;
-    if (userData) {
-      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
-    }
+    const data = res.body?.data;
+    const rawUser = data?.user ?? null;
+    if (!data && !rawUser) return;
+
+    const normalizedUser = {
+      ...(rawUser ?? {}),
+      name: rawUser?.name ?? data?.name ?? null,
+      email: rawUser?.email ?? data?.email ?? null,
+      id: rawUser?.id ?? rawUser?._id ?? data?.id ?? data?._id ?? null,
+      _id: rawUser?._id ?? rawUser?.id ?? data?._id ?? data?.id ?? null,
+    };
+
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(normalizedUser));
+    this.userDataEmitter.emit(normalizedUser);
+    this.loginEmitter.emit(true);
+  }
+
+  setUserData(userData: any) {
+    if (!userData) return;
+
+    const current = this.getUserData() ?? {};
+    const merged = {
+      ...current,
+      ...userData,
+    };
+
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(merged));
+    this.userDataEmitter.emit(merged);
   }
 
   getUserData() {
@@ -107,6 +132,7 @@ export class AuthRestService implements CanActivate {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(USER_DATA_KEY);
     this.loginEmitter.emit(false);
+    this.userDataEmitter.emit(null);
   }
 
   isLogged() {
@@ -116,6 +142,36 @@ export class AuthRestService implements CanActivate {
 
   provideToken() {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
+  }
+
+  getUserIdFromToken() {
+    const token = this.provideToken();
+    if (!token) return null;
+
+    const payload = this.decodeJwtPayload(token);
+    if (!payload || typeof payload !== 'object') return null;
+
+    const id = (payload as any).id ?? (payload as any).userId ?? (payload as any).sub ?? null;
+    return typeof id === 'string' && id.length ? id : null;
+  }
+
+  private decodeJwtPayload(token: string) {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+
+    try {
+      const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      const json = decodeURIComponent(
+        atob(padded)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(''),
+      );
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

@@ -13,9 +13,16 @@
         </nav>
 
         <div class="actions">
+            @if (isLogged) {
+            <a routerLink="/usuario" aria-label="Perfil" class="user-profile-link">
+                <img src="/img/usuario.png" alt="usuario" />
+                <span class="user-name">{{ userName }}</span>
+            </a>
+            } @else {
             <a routerLink="/login" aria-label="Perfil">
                 <img src="/img/usuario.png" alt="usuario" />
             </a>
+            }
             <a class="cart-link" routerLink="/carrito" aria-label="carrito">
                 <img src="/img/carrito-de-compras.png" alt="carrito" />
             </a>

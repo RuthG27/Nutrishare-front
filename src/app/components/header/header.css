@@ -1,6 +1,5 @@
 .main-header {
   width: 100%;
-  background: #c1ff72;
   padding: 26px 0;
   display: flex;
   justify-content: center;
@@ -77,9 +76,30 @@
   gap: 0.4rem;
 }
 
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border-radius: 23px;
+  background: rgba(168, 224, 99, 0.45);
+  text-decoration: none;
+  cursor: pointer;
+  min-width: auto;
+  width: auto !important;
+  height: 46px;
+}
+
+.user-name {
+  color: #1b1b1b;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 .actions button,
 .actions .cart-link,
-.actions a:not(.cart-link) {
+.actions a:not(.cart-link):not(.user-profile-link) {
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -95,7 +115,7 @@
 
 .actions button:hover,
 .actions .cart-link:hover,
-.actions a:not(.cart-link):hover {
+.actions a:not(.cart-link):not(.user-profile-link):hover {
   background: #d4d4d4;
 }
 

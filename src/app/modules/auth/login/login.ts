@@ -41,12 +41,11 @@ export class LoginComponent {
     this.authService.login(this.loginForm).subscribe({
       next: (response) => {
         this.authService.storeAccessToken(response);
+        this.authService.storeUserData(response);
         this.successMessage = '¡Inicio de sesión exitoso!';
         this.isLoading = false;
 
-        setTimeout(() => {
-          this.authService.redirectAfterLogin({ queryParams: {} });
-        }, 1500);
+        this.authService.redirectAfterLogin({ queryParams: {} });
       },
       error: (error) => {
         this.errorMessage = this.authService.makeLoginTextError(error);
