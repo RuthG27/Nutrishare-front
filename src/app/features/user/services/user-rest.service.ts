@@ -41,4 +41,18 @@ export class UserRestService {
       },
     });
   }
+
+  deleteMe() {
+    const token = this.authRestService.provideToken();
+
+    return this.http.delete(this.baseUrl + `/users/me`, {
+      observe: 'response',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token ? { 'x-access-token': token } : {}),
+      },
+    });
+  }
 }

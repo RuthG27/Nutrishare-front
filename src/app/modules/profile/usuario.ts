@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Recetas, Receta } from '../../services/recetas';
 import { Router } from '@angular/router';
+import { ModalConfirm } from '../../components/modal-confirm/modal-confirm';
 
 @Component({
   selector: 'app-usuario',
@@ -12,7 +13,7 @@ import { Router } from '@angular/router';
   templateUrl: './usuario.html',
   styleUrl: './usuario.css',
 })
-export class UsuarioComponent implements OnInit {
+export class UsuarioComponent implements OnInit, OnDestroy {
   userData: any = null;
   isEditing = false;
   errorMessage = '';
@@ -25,6 +26,7 @@ export class UsuarioComponent implements OnInit {
 
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
+  private modalConfirm!: ModalConfirm;
 
   constructor(
     private authRestService: AuthRestService,
@@ -34,19 +36,20 @@ export class UsuarioComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('Datos del usuario en perfil:', this.authRestService.getUserData());
     this.userData = this.authRestService.getUserData();
     this.initializeEditForm();
     this.loadRecipes();
+    this.modalConfirm = new ModalConfirm();
   }
 
   loadRecipes() {
     const allRecipes = this.recetasService.getRecetas();
 
-    // Seleccionar algunas recetas para "guardadas"
+    // Esto es temporal porque simula las recetas "guardadas"
+    // esto me permite hacer uso de las fechitas
     this.savedRecipes = allRecipes.slice(0, 8); // Primeras 8 recetas
 
-    // Seleccionar algunas recetas para "publicadas"
+    // Esto es temporal porque simula las recetas "publicadas"
     this.publishedRecipes = allRecipes.slice(8, 12); // Siguientes 4 recetas
   }
 
@@ -131,7 +134,7 @@ export class UsuarioComponent implements OnInit {
 
   cancelEdit() {
     this.isEditing = false;
-    this.initializeEditForm(); // Restaurar valores originales
+    this.initializeEditForm();
   }
 
   logout() {
@@ -145,5 +148,66 @@ export class UsuarioComponent implements OnInit {
       stars.push(i <= rating ? 'full' : 'empty');
     }
     return stars;
+  }
+
+  scrollRecipes(container: string, direction: 'left' | 'right') {
+    const element = document.querySelector(`.${container} .recipes-container`) as HTMLElement;
+    if (element) {
+      const scrollAmount = 300;
+      const scrollDirection = direction === 'left' ? -scrollAmount : scrollAmount;
+      element.scrollBy({ left: scrollDirection, behavior: 'smooth' });
+    }
+  }
+
+  deleteAccount() {
+    this.modalConfirm.show(
+      '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.',
+      () => {
+        this.errorMessage = '';
+        this.successMessage = '';
+
+        this.userRestService.deleteMe().subscribe({
+          next: () => {
+            this.authRestService.logout();
+            this.router.navigate(['/login']);
+          },
+          error: (err) => {
+            console.error('Error eliminando la cuenta:', err);
+            this.errorMessage = this.makeDeleteAccountErrorText(err);
+            setTimeout(() => {
+              this.errorMessage = '';
+            }, 4000);
+          },
+        });
+      },
+    );
+  }
+
+  ngOnDestroy() {
+    if (this.modalConfirm) {
+      this.modalConfirm.destroy();
+    }
+  }
+
+  makeDeleteAccountErrorText(error: any) {
+    switch (error?.status) {
+      case 0:
+        return 'No se puede conectar con el servidor';
+
+      case 401:
+        return 'No estás autenticado';
+
+      case 403:
+        return 'No tienes permisos para eliminar esta cuenta';
+
+      case 404:
+        return 'Usuario no encontrado';
+
+      case 500:
+        return 'El servidor no se encuentra disponible';
+
+      default:
+        return 'Ha ocurrido un error al eliminar la cuenta';
+    }
   }
 }
