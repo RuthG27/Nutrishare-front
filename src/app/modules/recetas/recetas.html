@@ -10,7 +10,9 @@
             <img [src]="receta.img" [alt]="receta.nombre">
             <h3>{{receta.nombre}}</h3>
             <p><strong>{{receta.puntuacion}}</strong> <i class="fas fa-star star"></i></p>
-            <button>Ver receta</button>
+            <!-- <button>Ver receta</button> -->
+            <button [routerLink]="['/recetas', receta._id]">Ver receta</button>
+
 
         </div>
 
