@@ -14,20 +14,6 @@ export class UserRestService {
     private authRestService: AuthRestService,
   ) {}
 
-  updateUser(userId: string, userUpdate: any) {
-    const token = this.authRestService.provideToken();
-
-    return this.http.put(this.baseUrl + `/users/${userId}`, userUpdate, {
-      observe: 'response',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(token ? { 'x-access-token': token } : {}),
-      },
-    });
-  }
-
   updateMe(userUpdate: any) {
     const token = this.authRestService.provideToken();
 

@@ -159,6 +159,10 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     }
   }
 
+  navegarASubirReceta() {
+    this.router.navigate(['/subir-receta']);
+  }
+
   deleteAccount() {
     this.modalConfirm.show(
       '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.',

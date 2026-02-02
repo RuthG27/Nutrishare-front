@@ -1,0 +1,151 @@
+<div class="subir-receta-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h1>Crear Nueva Receta</h1>
+      <p>Comparte tu receta favorita con la comunidad</p>
+    </div>
+
+    @if (successMessage) {
+    <div class="success-message">{{ successMessage }}</div>
+    }
+
+    @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+    }
+
+    <form (ngSubmit)="guardarReceta()" class="receta-form">
+      <div class="form-section">
+        <h2>Información Básica</h2>
+
+        <div class="form-group">
+          <label for="nombre">Nombre de la receta *</label>
+          <input
+            id="nombre"
+            type="text"
+            [(ngModel)]="recetaForm.nombre"
+            name="nombre"
+            placeholder="Ej: Ensalada César"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cocina">Tipo de cocina *</label>
+            <select id="cocina" [(ngModel)]="recetaForm.cocina" name="cocina" required>
+              <option value="">Selecciona...</option>
+              @for (cocina of cocinas; track cocina) {
+              <option [value]="cocina">{{ cocina }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" [(ngModel)]="recetaForm.categoria" name="categoria" required>
+              <option value="">Selecciona...</option>
+              @for (categoria of categorias; track categoria) {
+              <option [value]="categoria">{{ categoria }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dificultad">Dificultad *</label>
+            <select id="dificultad" [(ngModel)]="recetaForm.dificultad" name="dificultad" required>
+              <option value="">Selecciona...</option>
+              @for (dificultad of dificultades; track dificultad) {
+              <option [value]="dificultad">{{ dificultad }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tiempo">Tiempo de preparación *</label>
+            <input
+              id="tiempo"
+              type="text"
+              [(ngModel)]="recetaForm.tiempo_preparacion"
+              name="tiempo"
+              placeholder="Ej: 30 min"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="img">URL de la imagen</label>
+          <input
+            id="img"
+            type="url"
+            [(ngModel)]="recetaForm.img"
+            name="img"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Ingredientes</h2>
+        <p class="section-description">Agrega los ingredientes necesarios para tu receta</p>
+
+        @for (ingrediente of recetaForm.ingredientes; track $index) {
+        <div class="dynamic-field">
+          <input
+            type="text"
+            [(ngModel)]="recetaForm.ingredientes[$index]"
+            [name]="'ingrediente-' + $index"
+            placeholder="Ej: 200g de tomate"
+          />
+          @if (recetaForm.ingredientes.length > 1) {
+          <button type="button" class="btn-remove" (click)="eliminarIngrediente($index)">
+            ✕
+          </button>
+          }
+        </div>
+        }
+
+        <button type="button" class="btn-add" (click)="agregarIngrediente()">
+          + Agregar ingrediente
+        </button>
+      </div>
+
+      <div class="form-section">
+        <h2>Pasos de Preparación</h2>
+        <p class="section-description">Describe paso a paso cómo preparar la receta</p>
+
+        @for (paso of recetaForm.pasos; track $index) {
+        <div class="dynamic-field">
+          <div class="paso-number">{{ $index + 1 }}</div>
+          <textarea
+            [(ngModel)]="recetaForm.pasos[$index]"
+            [name]="'paso-' + $index"
+            placeholder="Describe este paso..."
+            rows="3"
+          ></textarea>
+          @if (recetaForm.pasos.length > 1) {
+          <button type="button" class="btn-remove" (click)="eliminarPaso($index)">
+            ✕
+          </button>
+          }
+        </div>
+        }
+
+        <button type="button" class="btn-add" (click)="agregarPaso()">
+          + Agregar paso
+        </button>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="cancelar()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit">
+          Crear Receta
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
