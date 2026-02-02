@@ -45,7 +45,7 @@ export class UsuarioComponent implements OnInit {
 
     // Seleccionar algunas recetas para "guardadas"
     this.savedRecipes = allRecipes.slice(0, 8); // Primeras 8 recetas
-
+  
     // Seleccionar algunas recetas para "publicadas"
     this.publishedRecipes = allRecipes.slice(8, 12); // Siguientes 4 recetas
   }

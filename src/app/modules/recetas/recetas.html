@@ -2,22 +2,84 @@
 
     <h1>Nuevas recetas:</h1>
 
+    <div class="filtros">
+        <div class="filtro">
+            <label for="cocina">Tipo de cocina:</label>
+
+            <!-- cada vez que se haga un cambio se aplica la funcion aplicarFiltros() -->
+            <select name="" id="" [(ngModel)]="filtros.cocina" (change) = "aplicarFiltros()" >
+                <!-- muestra las opciones de cocina -->
+                @for (opcionCoc of opcionesCocina; track opcionCoc){
+                    <option value="{{opcionCoc}}">{{opcionCoc}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="filtro">
+            <label for="categoria">Categoría:</label>
+            <select name="" id="" [(ngModel)]="filtros.categoria" (change) = "aplicarFiltros()" >
+                @for (opcionCat of opcionesCategoria; track opcionCat){
+                    <option value="{{opcionCat}}">{{opcionCat}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="filtro">
+            <label for="ingredientes">Ingredientes</label>
+            <select multiple [(ngModel)]="filtros.ingrediente" (change)="aplicarFiltros()">
+                @for (prod of opcionesIngredientesProductos; track prod._id) {
+                    <option [ngValue]="prod._id">
+                    {{ prod.nombre }}
+                    </option>
+                }
+            </select>
+        </div>
+
+
+        <div class="filtro">
+            <label for="nombre">Nombre de la receta: </label>
+            <input type = "text" [(ngModel)]="filtros.nombre" (input) = "aplicarFiltros()"/>
+        </div>
+
+        <div class="filtro">
+            <label for="dificultad">Dificultad:</label>
+            <select name="" id="" [(ngModel)]="filtros.dificultad"(change) = "aplicarFiltros()" >
+                @for (opcionDif of opcionesDificultad; track opcionDif){
+                    <option value="{{opcionDif}}">{{opcionDif}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="filtro">
+            <label for="tiempo_preparacion">Tiempo de preparación: </label>
+            <input type = "number" min = "1" max= "500" [(ngModel)]="filtros.tiempo_preparacion" (input) = "aplicarFiltros()"/>
+        </div>
+        <button class="btn-borrar" (click)="borrarFiltros()">Borrar filtros</button>
+
+    </div>
+
+    <!-- Si se cumplen los filtros -->
+    @if (listado_recetas_filtrado.length > 0){
     <div class="contenedorRecetas">
 
-        @for (receta of recetas;track receta._id){
+        @for (receta of listado_recetas_filtrado;track receta._id){
 
         <div class="cardReceta">
             <img [src]="receta.img" [alt]="receta.nombre">
             <h3>{{receta.nombre}}</h3>
             <p><strong>{{receta.puntuacion}}</strong> <i class="fas fa-star star"></i></p>
-            <!-- <button>Ver receta</button> -->
             <button [routerLink]="['/recetas', receta._id]">Ver receta</button>
-
+            <button (click)="guardarFavorita(receta)">Favorita</button>
 
         </div>
-
         }
-
     </div>
+
+<!-- Si no hay ninguna receta con estos filtros. -->
+} @else {
+        <div class="noExiste">
+            <p>No existe aún una receta con estos filtros.</p>
+        </div>
+}
 
 </div>
