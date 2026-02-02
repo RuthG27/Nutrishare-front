@@ -88,7 +88,6 @@ export class AuthRestService implements CanActivate {
     const accessToken = res.body?.data?.token;
     if (accessToken) {
       localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-      // No emitir aquí, esperar a storeUserData
     }
   }
 

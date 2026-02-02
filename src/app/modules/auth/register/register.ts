@@ -48,10 +48,7 @@ export class RegisterComponent {
         this.authService.storeUserData(response);
         this.successMessage = '¡Cuenta creada con éxito!';
         this.isLoading = false;
-
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 2000);
+        this.router.navigate(['/usuario']);
       },
       error: (error) => {
         this.errorMessage = this.makeRegisterErrorText(error);
