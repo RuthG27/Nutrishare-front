@@ -35,6 +35,7 @@ export interface Receta{
   img:string;
   puntuacion:number;
 }
+
 @Injectable({
   providedIn: 'root',
 })
@@ -43,6 +44,7 @@ export interface Receta{
 
 export class Recetas {
   private recetas:Receta []=[];
+  private recetas_guardadas: Receta [] = [];
 
   constructor(){
     const recetasJSON:RecetaJSON[]=[
@@ -2549,4 +2551,17 @@ export class Recetas {
   getRecetas():Receta[]{
     return this.recetas;
   }
+
+  //Método para guardar recetas en Guardadas
+  guardarReceta(receta: Receta): void{
+    // console.log("La receta se ha guardado.")
+    //push que añade un elemento a un array
+    this.recetas_guardadas.push(receta);
+  }
+
+  //Método que devuelve recetas guardadas
+  getRecetasGuardadas(): Receta[]{
+    return this.recetas_guardadas;
+  }
+
   }
