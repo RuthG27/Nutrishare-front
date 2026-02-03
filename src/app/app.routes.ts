@@ -8,17 +8,18 @@ import { CarritoComponent } from './modules/carrito/carrito';
 import { UsuarioComponent } from './modules/profile/usuario';
 import { LoginComponent } from './modules/auth/login/login';
 import { RegisterComponent } from './modules/auth/register/register';
+import { SubirRecetaComponent } from './modules/subir-receta/subir-receta';
 
-//Aquí van las rutas en el proyecto!!
 export const routes: Routes = [
-  { path: '', component: HomeComponent }, //Ruta para la página de inicio
-  { path: 'sobre-nosotros', component: SobreNosotrosComponent }, //Ruta para la página de Sobre nosotros
-  { path: 'recetas', component: RecetasComponent }, //Ruta para la página de recetas
-  { path: 'recetas/:id', component: DetalleComponent }, //Ruta para las página de detalle de las recetas
-  { path: 'productos', component: ProductosComponent }, //Ruta para la página de productos
-  { path: 'carrito', component: CarritoComponent }, //Ruta para la página de carrito
-  { path: 'usuario', component: UsuarioComponent }, //Ruta para la página de usuario
-  { path: 'login', component: LoginComponent }, //Ruta para iniciar sesión
-  { path: 'registro', component: RegisterComponent }, //Ruta para registrarse
-  { path: '**', redirectTo: '' }, //Ruta error = redireccionamos a la ruta RAIZ
+  { path: '', component: HomeComponent },
+  { path: 'sobre-nosotros', component: SobreNosotrosComponent },
+  { path: 'recetas', component: RecetasComponent },
+  { path: 'recetas/:id', component: DetalleComponent },
+  { path: 'productos', component: ProductosComponent },
+  { path: 'carrito', component: CarritoComponent },
+  { path: 'usuario', component: UsuarioComponent },
+  { path: 'subir-receta', component: SubirRecetaComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'registro', component: RegisterComponent },
+  { path: '**', redirectTo: '' },
 ];

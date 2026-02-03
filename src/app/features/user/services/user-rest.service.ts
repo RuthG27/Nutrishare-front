@@ -14,10 +14,10 @@ export class UserRestService {
     private authRestService: AuthRestService,
   ) {}
 
-  updateUser(userId: string, userUpdate: any) {
+  updateMe(userUpdate: any) {
     const token = this.authRestService.provideToken();
 
-    return this.http.put(this.baseUrl + `/users/${userId}`, userUpdate, {
+    return this.http.put(this.baseUrl + `/users/me`, userUpdate, {
       observe: 'response',
       headers: {
         'Content-Type': 'application/json',
@@ -28,10 +28,10 @@ export class UserRestService {
     });
   }
 
-  updateMe(userUpdate: any) {
+  deleteMe() {
     const token = this.authRestService.provideToken();
 
-    return this.http.put(this.baseUrl + `/users/me`, userUpdate, {
+    return this.http.delete(this.baseUrl + `/users/me`, {
       observe: 'response',
       headers: {
         'Content-Type': 'application/json',

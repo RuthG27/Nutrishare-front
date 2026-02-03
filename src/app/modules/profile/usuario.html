@@ -40,6 +40,10 @@
             <button class="logout-profile-btn" (click)="logout()">
                 Cerrar sesión
             </button>
+
+            <button class="delete-account-btn" (click)="deleteAccount()">
+                Eliminar cuenta
+            </button>
             } @else {
             <div class="profile-header">
                 <h2 class="edit-title">Editar perfil</h2>
@@ -84,7 +88,7 @@
         <h2 class="recipes-title">Recetas guardadas</h2>
     </div>
     <div class="recipes-wrapper">
-        <button class="nav-btn prev-btn">‹</button>
+        <button class="nav-btn prev-btn" (click)="scrollRecipes('saved-recipes', 'left')">‹</button>
         <div class="recipes-container">
             @for (recipe of savedRecipes; track recipe._id) {
             <div class="recipe-card">
@@ -101,16 +105,16 @@
             </div>
             }
         </div>
-        <button class="nav-btn next-btn">›</button>
+        <button class="nav-btn next-btn" (click)="scrollRecipes('saved-recipes', 'right')">›</button>
     </div>
 </section>
 <section class="published-recipes">
     <div class="recipes-header">
         <h2 class="recipes-title">Recetas publicadas</h2>
-        <button class="upload-btn">+ Subir nueva receta</button>
+        <button class="upload-btn" (click)="navegarASubirReceta()">+ Subir nueva receta</button>
     </div>
     <div class="recipes-wrapper">
-        <button class="nav-btn prev-btn">‹</button>
+        <button class="nav-btn prev-btn" (click)="scrollRecipes('published-recipes', 'left')">‹</button>
         <div class="recipes-container">
             @for (recipe of publishedRecipes; track recipe._id) {
             <div class="recipe-card">
@@ -127,6 +131,6 @@
             </div>
             }
         </div>
-        <button class="nav-btn next-btn">›</button>
+        <button class="nav-btn next-btn" (click)="scrollRecipes('published-recipes', 'right')">›</button>
     </div>
 </section>
