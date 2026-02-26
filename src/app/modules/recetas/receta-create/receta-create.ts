@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-subir-receta',
+  selector: 'app-receta-create',
+  standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './subir-receta.html',
-  styleUrl: './subir-receta.css',
+  templateUrl: './receta-create.html',
+  styleUrl: './receta-create.css',
 })
-export class SubirRecetaComponent {
+export class RecetaCreate {
   recetaForm = {
     nombre: '',
     cocina: '',
@@ -24,27 +25,37 @@ export class SubirRecetaComponent {
   errorMessage = '';
   successMessage = '';
 
-  cocinas = ['Mediterránea', 'Asiática', 'Mexicana', 'Italiana', 'Española', 'Griega', 'India', 'Japonesa', 'Otra'];
+  cocinas = [
+    'Mediterránea',
+    'Asiática',
+    'Mexicana',
+    'Italiana',
+    'Española',
+    'Griega',
+    'India',
+    'Japonesa',
+    'Otra',
+  ];
   categorias = ['Ensalada', 'Sopa', 'Principal', 'Postre', 'Aperitivo', 'Desayuno', 'Snack'];
   dificultades = ['Fácil', 'Media', 'Difícil'];
 
   constructor(private router: Router) {}
 
-  agregarPaso() {
+  agregarPaso(): void {
     this.recetaForm.pasos.push('');
   }
 
-  eliminarPaso(index: number) {
+  eliminarPaso(index: number): void {
     if (this.recetaForm.pasos.length > 1) {
       this.recetaForm.pasos.splice(index, 1);
     }
   }
 
-  agregarIngrediente() {
+  agregarIngrediente(): void {
     this.recetaForm.ingredientes.push('');
   }
 
-  eliminarIngrediente(index: number) {
+  eliminarIngrediente(index: number): void {
     if (this.recetaForm.ingredientes.length > 1) {
       this.recetaForm.ingredientes.splice(index, 1);
     }
@@ -91,7 +102,7 @@ export class SubirRecetaComponent {
     return true;
   }
 
-  guardarReceta() {
+  guardarReceta(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -108,15 +119,13 @@ export class SubirRecetaComponent {
       ingredientes: this.recetaForm.ingredientes.filter((i) => i.trim() !== ''),
     };
 
-    console.log('Receta a guardar:', recetaLimpia);
-
     this.successMessage = 'Receta creada exitosamente';
     setTimeout(() => {
-      this.router.navigate(['/usuario']);
+      this.router.navigate(['/recetas']);
     }, 2000);
   }
 
-  cancelar() {
+  cancelar(): void {
     this.router.navigate(['/usuario']);
   }
 }
