@@ -159,7 +159,7 @@ export class UsuarioComponent implements OnInit {
   }
 
   navegarASubirReceta() {
-    this.router.navigate(['/crear-receta']);
+    this.router.navigate(['/recetas/crear']);
   }
 
   deleteAccount() {

@@ -23,12 +23,9 @@ export class RecetaDetail {
     private productosService: Productos,
   ) {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('ID de la receta:', id);
-
     if (id) {
       const todasLasRecetas = this.recetasService.getRecetas();
       this.recetaSeleccionada = todasLasRecetas.find((r) => r._id === id);
-      console.log('Receta encontrada:', this.recetaSeleccionada);
 
       if (this.recetaSeleccionada) {
         const todosLosProductos = this.productosService.getProductos();
@@ -37,8 +34,6 @@ export class RecetaDetail {
           .map((ingredienteId) => todosLosProductos.find((p) => p._id === ingredienteId))
 
           .filter((p): p is Producto => !!p);
-
-        console.log('Ingredientes (productos) encontrados:', this.ingredientesSeleccionados);
       }
     }
   }

@@ -68,7 +68,6 @@ export class RecetasComponent {
     //confiamos en que filtros está actualizado con los filtros
     //p.ej.
     //filtros = {cocina: 'Griega', categoria: 'desayuno'}
-    console.log(this.filtros);
 
     //filtramos recetas
     //creamos listado_recetas_filtrado para que no se

@@ -167,8 +167,6 @@ export class RecetaEdit implements OnInit {
       ingredientes: this.recetaForm.ingredientes.filter((i) => i.trim() !== ''),
     };
 
-    console.log('Receta a actualizar:', recetaActualizada);
-
     this.successMessage = 'Receta actualizada exitosamente';
     setTimeout(() => {
       this.router.navigate(['/recetas', this.recetaId]);
@@ -176,6 +174,6 @@ export class RecetaEdit implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/recetas', this.recetaId]);
+    this.router.navigate(['/usuario']);
   }
 }

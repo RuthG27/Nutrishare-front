@@ -119,8 +119,6 @@ export class RecetaCreate {
       ingredientes: this.recetaForm.ingredientes.filter((i) => i.trim() !== ''),
     };
 
-    console.log('Receta a guardar:', recetaLimpia);
-
     this.successMessage = 'Receta creada exitosamente';
     setTimeout(() => {
       this.router.navigate(['/recetas']);
@@ -128,6 +126,6 @@ export class RecetaCreate {
   }
 
   cancelar(): void {
-    this.router.navigate(['/recetas']);
+    this.router.navigate(['/usuario']);
   }
 }
