@@ -1,19 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Recetas, Receta } from '../../services/recetas';
+import { Productos } from '../../services/productos';
 import { Router } from '@angular/router';
-import { ModalConfirm } from '../../components/modal-confirm/modal-confirm';
+import { RecipeDetailModalComponent } from '../../components/modals/recipe-detail-modal/recipe-detail-modal';
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecipeDetailModalComponent],
   templateUrl: './usuario.html',
   styleUrl: './usuario.css',
 })
-export class UsuarioComponent implements OnInit, OnDestroy {
+export class UsuarioComponent implements OnInit {
   userData: any = null;
   isEditing = false;
   errorMessage = '';
@@ -26,31 +27,29 @@ export class UsuarioComponent implements OnInit, OnDestroy {
 
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
-  private modalConfirm!: ModalConfirm;
+
+  selectedRecipe: Receta | null = null;
+  isModalVisible: boolean = false;
 
   constructor(
     private authRestService: AuthRestService,
     private userRestService: UserRestService,
     private recetasService: Recetas,
+    private productosService: Productos,
     private router: Router,
   ) {}
 
   ngOnInit() {
     this.userData = this.authRestService.getUserData();
-    this.initializeEditForm();
     this.loadRecipes();
-    this.modalConfirm = new ModalConfirm();
   }
 
   loadRecipes() {
     const allRecipes = this.recetasService.getRecetas();
 
-    // Esto es temporal porque simula las recetas "guardadas"
-    // esto me permite hacer uso de las fechitas
-    this.savedRecipes = allRecipes.slice(0, 8); // Primeras 8 recetas
+    this.savedRecipes = allRecipes.slice(0, 8);
 
-    // Esto es temporal porque simula las recetas "publicadas"
-    this.publishedRecipes = allRecipes.slice(8, 12); // Siguientes 4 recetas
+    this.publishedRecipes = allRecipes.slice(8, 12);
   }
 
   initializeEditForm() {
@@ -160,36 +159,30 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   }
 
   navegarASubirReceta() {
-    this.router.navigate(['/subir-receta']);
+    this.router.navigate(['/crear-receta']);
   }
 
   deleteAccount() {
-    this.modalConfirm.show(
-      '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.',
-      () => {
-        this.errorMessage = '';
-        this.successMessage = '';
-
-        this.userRestService.deleteMe().subscribe({
-          next: () => {
-            this.authRestService.logout();
-            this.router.navigate(['/login']);
-          },
-          error: (err) => {
-            console.error('Error eliminando la cuenta:', err);
-            this.errorMessage = this.makeDeleteAccountErrorText(err);
-            setTimeout(() => {
-              this.errorMessage = '';
-            }, 4000);
-          },
-        });
-      },
-    );
-  }
-
-  ngOnDestroy() {
-    if (this.modalConfirm) {
-      this.modalConfirm.destroy();
+    if (
+      confirm(
+        '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.',
+      )
+    ) {
+      this.errorMessage = '';
+      this.successMessage = '';
+      this.userRestService.deleteMe().subscribe({
+        next: () => {
+          this.authRestService.logout();
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Error eliminando la cuenta:', err);
+          this.errorMessage = this.makeDeleteAccountErrorText(err);
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 4000);
+        },
+      });
     }
   }
 
@@ -213,5 +206,29 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       default:
         return 'Ha ocurrido un error al eliminar la cuenta';
     }
+  }
+
+  getIngredientName(ingredientId: string): string {
+    const productos = this.productosService.getProductos();
+    const producto = productos.find((p: any) => p._id === ingredientId);
+    return producto ? producto.nombre : ingredientId;
+  }
+
+  navigateToRecipeDetail(recipe: Receta) {
+    this.router.navigate(['/recetas', recipe._id]);
+  }
+
+  navigateToEditRecipe(recipe: Receta) {
+    this.router.navigate(['/recetas/editar', recipe._id]);
+  }
+
+  openRecipeModal(recipe: Receta) {
+    this.selectedRecipe = recipe;
+    this.isModalVisible = true;
+  }
+
+  closeRecipeModal() {
+    this.isModalVisible = false;
+    this.selectedRecipe = null;
   }
 }

@@ -1,0 +1,87 @@
+@if (isVisible && recipe) {
+<div class="recipe-modal-overlay visible">
+  <div class="recipe-modal">
+    <!-- Header -->
+    <div class="modal-header">
+      <button (click)="closeModal()" class="modal-close">×</button>
+      <h2>{{ recipe.nombre }}</h2>
+      <div class="rating">
+        @for (star of getStars(recipe.puntuacion); track $index) {
+        <span class="star" [class.filled]="star === 'full'">★</span>
+        }
+        <span class="rating-text">{{ recipe.puntuacion }}/5</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Image -->
+      <div class="recipe-image-container">
+        <img [src]="recipe.img" [alt]="recipe.nombre" class="recipe-image" />
+        <div class="recipe-badges">
+          <span class="badge">{{ recipe.dificultad }}</span>
+          <span class="badge">{{ recipe.tiempo_preparacion }}</span>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="recipe-info">
+        <div class="info-row">
+          <span class="info-label">COCINA</span>
+          <span class="info-value">{{ recipe.cocina }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">CATEGORÍA</span>
+          <span class="info-value">{{ recipe.categoria }}</span>
+        </div>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="recipe-section">
+        <h3>Ingredientes</h3>
+        <div class="ingredients">
+          @for (ingredientId of recipe.ingredientes; track ingredientId) {
+          <span class="ingredient">{{ getIngredientName(ingredientId) }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="recipe-section">
+        <h3>Pasos</h3>
+        <div class="steps">
+          @for (step of recipe.pasos; track $index; let i = $index) {
+          <div class="step">
+            <span class="step-number">{{ i + 1 }}</span>
+            <p>{{ step }}</p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Nutrition -->
+      <div class="recipe-section">
+        <h3>Información Nutricional</h3>
+        <div class="nutrition">
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ recipe.nutrientes_totales.calories || 0 }}</span>
+            <span class="nutrition-label">CALORÍAS</span>
+          </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ recipe.nutrientes_totales.protein_g || 0 }}g</span>
+            <span class="nutrition-label">PROTEÍNAS</span>
+          </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ recipe.nutrientes_totales.fat_g || 0 }}g</span>
+            <span class="nutrition-label">GRASAS</span>
+          </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ recipe.nutrientes_totales.carbs_g || 0 }}g</span>
+            <span class="nutrition-label">CARBOHIDRATOS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

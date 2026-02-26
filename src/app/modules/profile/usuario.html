@@ -101,7 +101,7 @@
                     <span class="star" [class.filled]="star === 'full'">★</span>
                     }
                 </div>
-                <button class="recipe-btn">Ver receta</button>
+                <button class="recipe-btn" (click)="openRecipeModal(recipe)">Ver receta</button>
             </div>
             }
         </div>
@@ -127,10 +127,17 @@
                     <span class="star" [class.filled]="star === 'full'">★</span>
                     }
                 </div>
-                <button class="recipe-btn">Editar</button>
+                <div class="recipe-actions">
+                    <button class="recipe-btn small-btn" (click)="openRecipeModal(recipe)">Ver receta</button>
+                    <button class="recipe-btn small-btn" (click)="navigateToEditRecipe(recipe)">Editar</button>
+                </div>
             </div>
             }
         </div>
         <button class="nav-btn next-btn" (click)="scrollRecipes('published-recipes', 'right')">›</button>
     </div>
 </section>
+
+<!-- Recipe Detail Modal -->
+<app-recipe-detail-modal [recipe]="selectedRecipe" [isVisible]="isModalVisible" (close)="closeRecipeModal()">
+</app-recipe-detail-modal>
