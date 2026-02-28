@@ -8,6 +8,7 @@ import { CarritoComponent } from './modules/carrito/carrito';
 import { UsuarioComponent } from './modules/profile/usuario';
 import { LoginComponent } from './modules/auth/login/login';
 import { RegisterComponent } from './modules/auth/register/register';
+import { RecipeV2PdfDemoComponent } from './recipev2/recipev2-pdf-demo.component';
 
 //Aquí van las rutas en el proyecto!!
 export const routes: Routes = [
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'usuario', component: UsuarioComponent }, //Ruta para la página de Usuario
   { path: 'login', component: LoginComponent }, //Ruta para la página de Login
   { path: 'registro', component: RegisterComponent }, //Ruta para la página de Registro
+  { path: 'recipev2-pdf-demo', component: RecipeV2PdfDemoComponent }, //Ruta para la demo de PDF de recetas (pdf-lib)
   { path: '**', redirectTo: '' }, //Ruta error = redireccionamos a la ruta RAIZ
 ];
