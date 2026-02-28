@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Receta } from '../../../services/recetas';
+import { Receta } from '../../../features/receta/receta.service';
 import { Productos } from '../../../services/productos';
+import { RecetaPdfService } from '../../../features/receta/receta-pdf.service';
 
 @Component({
   selector: 'app-recipe-detail-modal',
@@ -15,15 +16,21 @@ export class RecipeDetailModalComponent {
   @Input() isVisible: boolean = false;
   @Output() close = new EventEmitter<void>();
 
-  constructor(private productosService: Productos) {}
+  isDownloading = false;
+
+  constructor(
+    private productosService: Productos,
+    private recetaPdfService: RecetaPdfService,
+  ) {}
 
   closeModal() {
     this.close.emit();
   }
 
-  getIngredientName(ingredientId: string): string {
-    const producto = this.productosService.getProductos().find((p) => p._id === ingredientId);
-    return producto ? producto.nombre : ingredientId;
+  getIngredientName(ingrediente: { timestamp: number; date: string }): string {
+    // Por ahora mostramos el ID del ingrediente hasta tener el servicio de productos
+    // TODO: Implementar resolución de nombres de productos cuando esté disponible
+    return `Ingrediente ${ingrediente.timestamp}`;
   }
 
   getStars(rating: number): string[] {
@@ -38,5 +45,25 @@ export class RecipeDetailModalComponent {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
+  }
+
+  async downloadPdf() {
+    if (!this.recipe || this.isDownloading) return;
+
+    try {
+      this.isDownloading = true;
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      await this.recetaPdfService.downloadRecipePdf(this.recipe);
+    } catch (error) {
+      console.error('Error descargando PDF:', error);
+    } finally {
+      this.isDownloading = false;
+    }
+  }
+
+  canDownload(): boolean {
+    return this.recipe ? this.recetaPdfService.canGeneratePdf(this.recipe) : false;
   }
 }

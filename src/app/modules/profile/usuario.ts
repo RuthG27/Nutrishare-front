@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
-import { Recetas, Receta } from '../../services/recetas';
+import { Receta, RecetaService } from '../../features/receta/receta.service';
 import { Productos } from '../../services/productos';
 import { Router } from '@angular/router';
 import { RecipeDetailModalComponent } from '../../components/modals/recipe-detail-modal/recipe-detail-modal';
@@ -34,7 +34,7 @@ export class UsuarioComponent implements OnInit {
   constructor(
     private authRestService: AuthRestService,
     private userRestService: UserRestService,
-    private recetasService: Recetas,
+    private recetaService: RecetaService,
     private productosService: Productos,
     private router: Router,
   ) {}
@@ -45,11 +45,20 @@ export class UsuarioComponent implements OnInit {
   }
 
   loadRecipes() {
-    const allRecipes = this.recetasService.getRecetas();
-
-    this.savedRecipes = allRecipes.slice(0, 8);
-
-    this.publishedRecipes = allRecipes.slice(8, 12);
+    // Por ahora usamos datos mock hasta conectar con el back-end
+    // TODO: Implementar llamada real al back-end cuando esté listo
+    this.recetaService.obtenerTodas().subscribe({
+      next: (recetas) => {
+        this.savedRecipes = recetas.slice(0, 8);
+        this.publishedRecipes = recetas.slice(8, 12);
+      },
+      error: (error) => {
+        console.error('Error cargando recetas:', error);
+        // Fallback a datos vacíos
+        this.savedRecipes = [];
+        this.publishedRecipes = [];
+      },
+    });
   }
 
   initializeEditForm() {
@@ -215,11 +224,13 @@ export class UsuarioComponent implements OnInit {
   }
 
   navigateToRecipeDetail(recipe: Receta) {
-    this.router.navigate(['/recetas', recipe._id]);
+    // TODO: Implementar navegación a detalle de receta con id correcto
+    this.router.navigate(['/recetas', '74f1a0000000000000000101']);
   }
 
   navigateToEditRecipe(recipe: Receta) {
-    this.router.navigate(['/recetas/editar', recipe._id]);
+    // TODO: Implementar navegación a edición de receta con id correcto
+    this.router.navigate(['/recetas/editar', '74f1a0000000000000000101']);
   }
 
   openRecipeModal(recipe: Receta) {

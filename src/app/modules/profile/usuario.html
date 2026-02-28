@@ -90,7 +90,7 @@
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('saved-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of savedRecipes; track recipe._id) {
+            @for (recipe of savedRecipes; track recipe.id.timestamp) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
@@ -116,7 +116,7 @@
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('published-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of publishedRecipes; track recipe._id) {
+            @for (recipe of publishedRecipes; track recipe.id.timestamp) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
