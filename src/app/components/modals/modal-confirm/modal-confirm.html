@@ -1,0 +1,16 @@
+<div class="modal-overlay" [class.visible]="isVisible" (click)="onOverlayClick($event)">
+  <div class="modal-confirm">
+    <div class="modal-header">
+      <h3>Confirmar eliminación</h3>
+    </div>
+    
+    <div class="modal-content">
+      <p>{{ message }}</p>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="onCancel()">Cancelar</button>
+      <button class="btn-confirm" (click)="onConfirm()">Eliminar</button>
+    </div>
+  </div>
+</div>
