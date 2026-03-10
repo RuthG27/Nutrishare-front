@@ -1,7 +1,7 @@
 <div id="contenedor-detalle-recetas">
   <ng-container *ngIf="recetaSeleccionada; else noEncontrada">
     <div class="grid">
-        
+
       <!-- CONTENIDO DE LA RECETA -->
       <div>
         <h1>{{ recetaSeleccionada.nombre }}</h1>
@@ -15,12 +15,12 @@
 
         <h3>Ingredientes</h3>
         <div class="lista-ingredientes">
-        <div class="ingrediente" *ngFor="let prod of ingredientesSeleccionados">
+          <div class="ingrediente" *ngFor="let prod of ingredientesSeleccionados">
             <div class="circulo">
-                <img [src]="prod.img" [alt]="prod.nombre" />
+              <img [src]="prod.img" [alt]="prod.nombre" />
             </div>
             <span>{{ prod.nombre }}</span>
-        </div>
+          </div>
         </div>
 
 
@@ -42,10 +42,7 @@
 
       <!-- IMAGEN DE LA RECETA -->
       <div class="foto-receta">
-        <img
-          [src]="recetaSeleccionada.img"
-          [alt]="recetaSeleccionada.nombre"
-        />
+        <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
       </div>
     </div>
   </ng-container>

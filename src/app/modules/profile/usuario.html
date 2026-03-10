@@ -90,7 +90,7 @@
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('saved-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of savedRecipes; track recipe._id) {
+            @for (recipe of savedRecipes; track recipe.id.timestamp) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
@@ -101,7 +101,7 @@
                     <span class="star" [class.filled]="star === 'full'">★</span>
                     }
                 </div>
-                <button class="recipe-btn">Ver receta</button>
+                <button class="recipe-btn" (click)="openRecipeModal(recipe)">Ver receta</button>
             </div>
             }
         </div>
@@ -116,7 +116,7 @@
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('published-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of publishedRecipes; track recipe._id) {
+            @for (recipe of publishedRecipes; track recipe.id.timestamp) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
@@ -127,10 +127,17 @@
                     <span class="star" [class.filled]="star === 'full'">★</span>
                     }
                 </div>
-                <button class="recipe-btn">Editar</button>
+                <div class="recipe-actions">
+                    <button class="recipe-btn small-btn" (click)="openRecipeModal(recipe)">Ver receta</button>
+                    <button class="recipe-btn small-btn" (click)="navigateToEditRecipe(recipe)">Editar</button>
+                </div>
             </div>
             }
         </div>
         <button class="nav-btn next-btn" (click)="scrollRecipes('published-recipes', 'right')">›</button>
     </div>
 </section>
+
+<!-- Recipe Detail Modal -->
+<app-recipe-detail-modal [recipe]="selectedRecipe" [isVisible]="isModalVisible" (close)="closeRecipeModal()">
+</app-recipe-detail-modal>
