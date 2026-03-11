@@ -1,60 +1,86 @@
-# NutrishareFrontend
+![NutriShare](public/img/nutrishare_verde.png)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.6.
+**NutriShare** es una aplicación web diseñada para gestionar recetas de cocina de forma sencilla y saludable.
 
-## Development server
+La plataforma permite a los usuarios descubrir, crear, editar y eliminar sus propias recetas, fomentando el intercambio de hábitos alimenticios en una comunidad digital.
 
-To start a local development server, run:
+Como funcionalidad destacada, el sistema permite la descarga de recetas en formato PDF, facilitando que cada usuario pueda guardarlas o imprimirlas para su uso diario.
 
-```bash
-ng serve
-```
+**Dirección web:** [https://nutri-share.com/](https://nutri-share.com/)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+![Home](public/img/imgPrincipal.png)
 
-## Code scaffolding
+## Tecnologías principales
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Angular 20
+- TypeScript
+- RxJS
+- Angular Router
+- Angular Forms
+- pdf-lib
 
-```bash
-ng generate component component-name
-```
+## Funcionalidades incluidas
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Autenticación de usuarios (login y registro)
+- Gestión de sesión con token en `localStorage`
+- Listado y filtrado de recetas
+- Vista de detalle de receta
+- Creación, edición y eliminación de recetas
+- Perfil de usuario con actualización de datos
+- Generación de PDF para recetas
 
-```bash
-ng generate --help
-```
+## Requisitos
 
-## Building
+- Node.js 20+
+- npm 10+
+- Angular CLI 20+
 
-To build the project run:
+## Instalación y ejecución
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+1. Instalar dependencias:
 
 ```bash
-ng e2e
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+1. Ejecutar en desarrollo:
 
-## Additional Resources
+```bash
+npm start
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# Nutrishare
+## Funcionalidades principales
+
+### Home
+
+![Home](public/img/home.png)
+
+### Listado de recetas
+
+![Recetas](public/img/imgListado.png)
+
+### Detalle de receta
+
+![Detalle receta](public/img/imgDetalle.png)
+
+### Listado de ingredientes
+
+![Ingredientes](public/img/imgIngredientes.png)
+
+### Generación de PDF
+
+![PDF](public/img/imgPdf.png)
+
+### Detalle de PDF
+
+![Detalle PDF](public/img/detallePdf.png)
+
+---
+
+## Integrantes
+
+- Sara Martínez Fernández
+- Irene Martínez Iglesias
+- Ruth Guamán Albarracín
+
+Proyecto Intermodular de Desarrollo de Aplicaciones Web
