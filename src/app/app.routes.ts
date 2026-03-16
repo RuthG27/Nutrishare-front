@@ -23,3 +23,8 @@ export const routes: Routes = [
   { path: 'registro', component: RegisterComponent },
   { path: '**', redirectTo: '' },
 ];
+
+
+
+
+

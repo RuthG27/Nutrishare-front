@@ -7,6 +7,30 @@
   padding: 3rem;
 }
 
+.cabecera-recetas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.btn-añadir {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-family: 'FuenteTitulos', serif;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-añadir:hover {
+  background-color: #c1ff72;
+  color: black;
+}
+
 .contenedorRecetas {
   margin-top: 20px;
   display: grid;

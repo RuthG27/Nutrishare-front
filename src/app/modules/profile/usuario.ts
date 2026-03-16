@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Recetas, Receta } from '../../services/recetas';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ModalConfirm } from '../../components/modal-confirm/modal-confirm';
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './usuario.html',
   styleUrl: './usuario.css',
 })
@@ -27,6 +27,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
   private modalConfirm!: ModalConfirm;
+  recetas_favoritas: Receta[] = [];
 
   constructor(
     private authRestService: AuthRestService,
@@ -40,6 +41,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     this.initializeEditForm();
     this.loadRecipes();
     this.modalConfirm = new ModalConfirm();
+    this.cargarFavoritas();
   }
 
   loadRecipes() {
@@ -213,5 +215,22 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       default:
         return 'Ha ocurrido un error al eliminar la cuenta';
     }
+  }
+
+  //Versión para front: lee array en memoria
+  cargarFavoritas(): void {
+    this.recetas_favoritas = this.recetasService.getRecetasGuardadas();
+  }
+
+  //Al conectar con el Back sustituimos por este método que llama a la API y espera respuesta:
+//   cargarFavoritas(): void {
+//   this.recetasService.getFavoritasFromApi().subscribe(favoritas => {
+//     this.recetas_favoritas = favoritas;
+//   });
+// }
+
+  eliminarFavorita(id: string): void {
+    this.recetasService.eliminarReceta(id);
+    this.cargarFavoritas();
   }
 }

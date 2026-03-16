@@ -572,3 +572,36 @@
     font-size: 0.9rem;
   }
 }
+
+.no-favoritas {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.no-favoritas a {
+  display: inline-block;
+  margin-top: 1rem;
+  background: black;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: 'FuenteTitulos', serif;
+  font-weight: 700;
+}
+
+.no-favoritas a:hover {
+  background: #c1ff72;
+  color: black;
+}
+
+.btn-eliminar-fav {
+  background-color: #e63946;
+  margin-top: 6px;
+}
+
+.btn-eliminar-fav:hover {
+  background-color: #c1121f;
+  box-shadow: none;
+}
