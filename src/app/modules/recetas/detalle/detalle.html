@@ -1,7 +1,6 @@
 <div id="contenedor-detalle-recetas">
   <ng-container *ngIf="recetaSeleccionada; else noEncontrada">
     <div class="grid">
-        
       <!-- CONTENIDO DE LA RECETA -->
       <div>
         <h1>{{ recetaSeleccionada.nombre }}</h1>
@@ -15,14 +14,13 @@
 
         <h3>Ingredientes</h3>
         <div class="lista-ingredientes">
-        <div class="ingrediente" *ngFor="let prod of ingredientesSeleccionados">
+          <div class="ingrediente" *ngFor="let prod of ingredientesSeleccionados">
             <div class="circulo">
-                <img [src]="prod.img" [alt]="prod.nombre" />
+              <img [src]="prod.img" [alt]="prod.nombre" />
             </div>
             <span>{{ prod.nombre }}</span>
+          </div>
         </div>
-        </div>
-
 
         <h3>Pasos</h3>
         <ol>
@@ -31,21 +29,19 @@
           </li>
         </ol>
 
-        <button type="button" (click)="volverAtras()">
-          Volver
-        </button>
-        <!-- <button type="button" (click)="guardarFavorita"> -->
-        <button type="button">
-          Favorita
-        </button>
+        <button type="button" (click)="volverAtras()">Volver</button>
+        <!-- @if (isLogged()) { -->
+          <button type="button" class="btn-favorita" (click)="guardarFavorita()" [class.activo]="esFavorita()">
+            {{ esFavorita() ? 'Guardada' : 'Favorita' }}
+          </button>
+          <button type="button" class="btn-editar">Editar</button>
+          <button type="button" class="btn-eliminar">Eliminar</button>
+        <!-- } -->
       </div>
 
       <!-- IMAGEN DE LA RECETA -->
       <div class="foto-receta">
-        <img
-          [src]="recetaSeleccionada.img"
-          [alt]="recetaSeleccionada.nombre"
-        />
+        <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
       </div>
     </div>
   </ng-container>
@@ -53,9 +49,7 @@
   <ng-template #noEncontrada>
     <div class="no-encontrada">
       <p>No se ha encontrado la receta.</p>
-      <button class="btn-volver" type="button" (click)="volverAtras()">
-        Volver
-      </button>
+      <button class="btn-volver" type="button" (click)="volverAtras()">Volver</button>
     </div>
   </ng-template>
 </div>

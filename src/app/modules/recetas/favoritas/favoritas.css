@@ -1,0 +1,21 @@
+#favoritas {
+  padding: 2rem;
+}
+
+.btn-eliminar {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-eliminar:hover {
+  background-color: #c0392b;
+}
+
+.noExiste {
+  text-align: center;
+  margin-top: 3rem;
+}

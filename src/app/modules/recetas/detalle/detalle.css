@@ -137,3 +137,33 @@ button:hover {
   color: black;
 }
 
+.btn-volver, .btn-favorita {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.btn-favorita.activo {
+  background-color: #c1ff72;
+  color: black;
+}
+
+.btn-editar {
+  background-color: #c1ff72;
+  color: black;
+}
+
+.btn-editar:hover {
+  background-color: #a8e85a;
+  color: black;
+}
+
+.btn-eliminar {
+  background-color: #e63946;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background-color: #c1121f;
+  color: white;
+}
+

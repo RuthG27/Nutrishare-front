@@ -22,3 +22,8 @@ export const routes: Routes = [
   { path: 'registro', component: RegisterComponent }, //Ruta para registrarse
   { path: '**', redirectTo: '' }, //Ruta error = redireccionamos a la ruta RAIZ
 ];
+
+
+
+
+

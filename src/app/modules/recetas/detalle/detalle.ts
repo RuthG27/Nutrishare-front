@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthRestService } from '../../../features/auth/services/auth-rest.service';
 
 import { Recetas, Receta } from '../../../services/recetas';
 import { Productos, Producto } from '../../../services/productos';
@@ -20,7 +21,8 @@ export class DetalleComponent {
   constructor(
     private route: ActivatedRoute,
     private recetasService: Recetas,
-    private productosService: Productos
+    private productosService: Productos,
+    private authService: AuthRestService,
   ) {
     const id = this.route.snapshot.paramMap.get('id');
     console.log('ID de la receta:', id);
@@ -34,9 +36,7 @@ export class DetalleComponent {
         const todosLosProductos = this.productosService.getProductos();
 
         this.ingredientesSeleccionados = this.recetaSeleccionada.ingredientes
-          .map((ingredienteId) =>
-            todosLosProductos.find((p) => p._id === ingredienteId)
-          )
+          .map((ingredienteId) => todosLosProductos.find((p) => p._id === ingredienteId))
 
           .filter((p): p is Producto => !!p);
 
@@ -47,5 +47,21 @@ export class DetalleComponent {
 
   volverAtras() {
     history.back();
+  }
+
+  guardarFavorita(): void {
+    if (this.recetaSeleccionada) {
+      this.recetasService.guardarReceta(this.recetaSeleccionada);
+    }
+  }
+
+  esFavorita(): boolean {
+    return this.recetaSeleccionada
+      ? this.recetasService.esFavorita(this.recetaSeleccionada._id)
+      : false;
+  }
+
+  isLogged(): boolean {
+    return this.authService.isLogged();
   }
 }

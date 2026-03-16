@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Recetas, Receta } from '../../services/recetas';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './usuario.html',
   styleUrl: './usuario.css',
 })
@@ -25,19 +25,23 @@ export class UsuarioComponent implements OnInit {
 
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
+  recetas_favoritas: Receta[] = [];
 
   constructor(
     private authRestService: AuthRestService,
     private userRestService: UserRestService,
     private recetasService: Recetas,
     private router: Router,
-  ) {}
+  ) {
+    this.recetas_favoritas = this.recetasService.getRecetasGuardadas();
+  }
 
   ngOnInit() {
     console.log('Datos del usuario en perfil:', this.authRestService.getUserData());
     this.userData = this.authRestService.getUserData();
     this.initializeEditForm();
     this.loadRecipes();
+    this.cargarFavoritas();
   }
 
   loadRecipes() {
@@ -45,7 +49,7 @@ export class UsuarioComponent implements OnInit {
 
     // Seleccionar algunas recetas para "guardadas"
     this.savedRecipes = allRecipes.slice(0, 8); // Primeras 8 recetas
-  
+
     // Seleccionar algunas recetas para "publicadas"
     this.publishedRecipes = allRecipes.slice(8, 12); // Siguientes 4 recetas
   }
@@ -145,5 +149,22 @@ export class UsuarioComponent implements OnInit {
       stars.push(i <= rating ? 'full' : 'empty');
     }
     return stars;
+  }
+
+  //Versión para front: lee array en memoria
+  cargarFavoritas(): void {
+    this.recetas_favoritas = this.recetasService.getRecetasGuardadas();
+  }
+
+  //Al conectar con el Back sustituimos por este método que llama a la API y espera respuesta:
+//   cargarFavoritas(): void {
+//   this.recetasService.getFavoritasFromApi().subscribe(favoritas => {
+//     this.recetas_favoritas = favoritas;
+//   });
+// }
+
+  eliminarFavorita(id: string): void {
+    this.recetasService.eliminarReceta(id);
+    this.cargarFavoritas();
   }
 }
