@@ -2,8 +2,8 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
-import { Receta, RecetasService } from '../services/recetas';
-import { Producto, ProductosService } from '../services/productos';
+import { Receta, RecetasService } from '../../services/recetas';
+import { Producto, ProductosService } from '../../services/productos';
 
 @Component({
   selector: 'app-form-recetas',
