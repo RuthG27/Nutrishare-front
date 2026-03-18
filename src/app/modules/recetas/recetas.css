@@ -19,6 +19,10 @@
   align-items: center;
 }
 
+.btn-crear{
+  cursor: pointer;
+}
+
 .filtros {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -104,6 +108,29 @@ button {
 }
 
 button:hover {
+  background-color: #c1ff72;
+  color: black;
+}
+
+.header-recetas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-nueva-receta {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-nueva-receta:hover {
   background-color: #c1ff72;
   color: black;
 }

@@ -1,6 +1,17 @@
 <div id="recetas">
 
-    <h1>Nuevas recetas:</h1>
+    <div class="header-recetas" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Nuevas recetas:</h1>
+        @if (isLogged) {
+            <button (click)="abrirFormularioCrear()" class="btn-crear"> ➕ Añadir receta</button>
+        }
+    </div>
+
+    <!-- Mostrar formulario si se pulsa el botón -->
+    <app-form-recetas
+  *ngIf="mostrarFormulario"
+  (cerrarFormulario)="cerrarFormulario()">
+</app-form-recetas>
 
     <div class="filtros">
         <div class="filtro">
