@@ -12,8 +12,9 @@ import { AuthRestService } from '../../features/auth/services/auth-rest.service'
 export class HeaderComponent implements OnInit {
   userName: string | null = null;
   isLogged: boolean = false;
+  isMenuOpen: boolean = false;
 
-  constructor(private authRestService: AuthRestService) {}
+  constructor(private authRestService: AuthRestService) { }
 
   ngOnInit() {
     this.isLogged = this.authRestService.isLogged();
@@ -27,5 +28,9 @@ export class HeaderComponent implements OnInit {
     this.authRestService.userDataEmitter.subscribe((newUserData: any) => {
       this.userName = newUserData ? newUserData.name || newUserData.email : null;
     });
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }
