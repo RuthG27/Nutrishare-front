@@ -38,6 +38,17 @@
         <button type="button">
           Favorita
         </button>
+        <!-- Botones crud: actualizar + eliminar -->
+
+        <button *ngIf="isLogged" (click)="mostrarFormulario = true" class="button-editar">Editar</button>
+
+        <app-form-recetas *ngIf="mostrarFormulario" [receta]="recetaSeleccionada"
+          (cerrarFormulario)="mostrarFormulario = false">
+
+
+        </app-form-recetas>
+        <button *ngIf="isLogged" (click)="eliminar(recetaSeleccionada._id)" type="button"
+          class="button-eliminar">Eliminar</button>
       </div>
 
       <!-- IMAGEN DE LA RECETA -->
