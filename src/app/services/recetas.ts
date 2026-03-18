@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface NutrientesTotales {
   calories: number;
@@ -29,7 +30,7 @@ export interface Receta {
 })
 export class RecetasService {
 
-  private apiUrl = 'http://localhost:9003/api/recetas'; // URL SPRING
+  private apiUrl = `${environment.url_api}/recetas`; // URL SPRING
 
   // Declaramos la propiedad para guardar recetas
   private recetas_guardadas: Receta[] = [];

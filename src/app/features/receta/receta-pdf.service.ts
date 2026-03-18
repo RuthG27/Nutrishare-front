@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { Receta, Nutrientes } from './receta.service';
-import { Productos, Producto } from '../../services/productos';
+import { Producto, ProductosService } from '../../services/productos';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecetaPdfService {
-  constructor(private productosService: Productos) {}
+  constructor(private productosService: ProductosService) {}
 
   async generateRecipePdfBytes(receta: Receta): Promise<Uint8Array> {
     if (!receta.nombre || !receta.pasos || !receta.ingredientes) {

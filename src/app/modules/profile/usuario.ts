@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Receta, RecetaService } from '../../features/receta/receta.service';
-import { Productos } from '../../services/productos';
+import { ProductosService } from '../../services/productos';
 import { Router } from '@angular/router';
 import { RecipeDetailModalComponent } from '../../components/modals/recipe-detail-modal/recipe-detail-modal';
 
@@ -27,6 +27,7 @@ export class UsuarioComponent implements OnInit {
 
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
+  allProducts: any[] = [];
 
   selectedRecipe: Receta | null = null;
   isModalVisible: boolean = false;
@@ -35,13 +36,16 @@ export class UsuarioComponent implements OnInit {
     private authRestService: AuthRestService,
     private userRestService: UserRestService,
     private recetaService: RecetaService,
-    private productosService: Productos,
+    private productosService: ProductosService,
     private router: Router,
   ) {}
 
   ngOnInit() {
     this.userData = this.authRestService.getUserData();
     this.loadRecipes();
+    this.productosService.getProductos().subscribe((productos) => {
+      this.allProducts = productos;
+    });
   }
 
   loadRecipes() {
@@ -218,8 +222,7 @@ export class UsuarioComponent implements OnInit {
   }
 
   getIngredientName(ingredientId: string): string {
-    const productos = this.productosService.getProductos();
-    const producto = productos.find((p: any) => p._id === ingredientId);
+    const producto = this.allProducts.find((p: any) => p._id === ingredientId);
     return producto ? producto.nombre : ingredientId;
   }
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ValoresNutricionales {
   calorias: number;
@@ -25,9 +26,9 @@ export interface Producto {
 export class ProductosService {
 
   // URLS SPRING
-  private apiUrl = 'http://localhost:9003/api/ingredientes';
+  private apiUrl = `${environment.url_api}/ingredientes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Obtener todos los productos
   getProductos(): Observable<Producto[]> {

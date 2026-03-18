@@ -8,13 +8,13 @@ import { FormRecetasComponent } from '../../../components/form-recetas/form-rece
 import { AuthRestService } from '../../../features/auth/services/auth-rest.service';
 
 @Component({
-  selector: 'app-detalle',
+  selector: 'app-receta-detail',
   standalone: true,
   imports: [CommonModule, FormRecetasComponent],
-  templateUrl: './detalle.html',
-  styleUrls: ['./detalle.css'],
+  templateUrl: './receta-detail.html',
+  styleUrls: ['./receta-detail.css'],
 })
-export class DetalleComponent implements OnInit {
+export class RecetaDetail implements OnInit {
   recetaSeleccionada?: Receta;
   ingredientesSeleccionados: Producto[] = [];
 

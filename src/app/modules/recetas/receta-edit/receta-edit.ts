@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Receta } from '../../../services/recetas';
-import { Recetas } from '../../../services/recetas';
-import { Productos } from '../../../services/productos';
+import { RecetasService } from '../../../services/recetas';
+import { ProductosService } from '../../../services/productos';
 
 @Component({
   selector: 'app-receta-edit',
@@ -47,8 +47,8 @@ export class RecetaEdit implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private recetasService: Recetas,
-    private productosService: Productos,
+    private recetasService: RecetasService,
+    private productosService: ProductosService,
   ) {}
 
   ngOnInit(): void {
@@ -62,31 +62,33 @@ export class RecetaEdit implements OnInit {
   }
 
   cargarReceta(): void {
-    const todasLasRecetas = this.recetasService.getRecetas();
-    const receta = todasLasRecetas.find((r) => r._id === this.recetaId);
+    this.recetasService.getRecetas().subscribe((todasLasRecetas: Receta[]) => {
+      const receta = todasLasRecetas.find((r) => r._id === this.recetaId);
 
-    if (receta) {
-      const todosLosProductos = this.productosService.getProductos();
-      const nombresIngredientes = receta.ingredientes
-        .map((id) => todosLosProductos.find((p) => p._id === id))
-        .filter((producto) => producto !== undefined)
-        .map((producto) => producto!.nombre);
+      if (receta) {
+        this.productosService.getProductos().subscribe((todosLosProductos) => {
+          const nombresIngredientes = receta.ingredientes
+            .map((id: string) => todosLosProductos.find((p) => p._id === id))
+            .filter((producto): producto is any => producto !== undefined)
+            .map((producto: any) => producto.nombre);
 
-      this.recetaForm = {
-        nombre: receta.nombre,
-        cocina: receta.cocina,
-        categoria: receta.categoria,
-        dificultad: receta.dificultad,
-        tiempo_preparacion: receta.tiempo_preparacion,
-        img: receta.img,
-        pasos: [...receta.pasos],
-        ingredientes: nombresIngredientes.length > 0 ? nombresIngredientes : [''],
-      };
-    } else {
-      this.errorMessage = 'Receta no encontrada';
-    }
-
-    this.loading = false;
+          this.recetaForm = {
+            nombre: receta.nombre,
+            cocina: receta.cocina,
+            categoria: receta.categoria,
+            dificultad: receta.dificultad,
+            tiempo_preparacion: receta.tiempo_preparacion,
+            img: receta.img,
+            pasos: [...receta.pasos],
+            ingredientes: nombresIngredientes.length > 0 ? nombresIngredientes : [''],
+          };
+          this.loading = false;
+        });
+      } else {
+        this.errorMessage = 'Receta no encontrada';
+        this.loading = false;
+      }
+    });
   }
 
   agregarPaso(): void {

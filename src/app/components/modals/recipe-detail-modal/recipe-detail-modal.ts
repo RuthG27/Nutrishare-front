@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Receta } from '../../../features/receta/receta.service';
-import { Productos } from '../../../services/productos';
+import { ProductosService } from '../../../services/productos';
 import { RecetaPdfService } from '../../../features/receta/receta-pdf.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class RecipeDetailModalComponent {
   isDownloading = false;
 
   constructor(
-    private productosService: Productos,
+    private productosService: ProductosService,
     private recetaPdfService: RecetaPdfService,
   ) {}
 
