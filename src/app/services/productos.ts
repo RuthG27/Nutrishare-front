@@ -1,4 +1,41 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface ValoresNutricionales {
+  calorias: number;
+  proteinas_g: number;
+  grasas_g: number;
+  carbohidratos_g: number;
+  fibra_g: number;
+}
+
+export interface Producto {
+  _id: string;
+  nombre: string;
+  categoria: string;
+  valores_nutricionales: ValoresNutricionales;
+  img: string;
+  precio: number;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ProductosService {
+
+  // URLS SPRING
+  private apiUrl = 'http://localhost:9003/api/ingredientes';
+
+  constructor(private http: HttpClient) {}
+
+  // Obtener todos los productos
+  getProductos(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/todas`);
+  }
+
+}
+/*import { Injectable } from '@angular/core';
 
 export interface ValoresNutricionales {
   calorias: number;
@@ -841,4 +878,5 @@ getProductos():Producto[]{
 
 
   
-}
+}*/
+
