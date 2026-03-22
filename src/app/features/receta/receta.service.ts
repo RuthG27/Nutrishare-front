@@ -13,6 +13,7 @@ export interface Nutrientes {
 }
 
 export interface Receta {
+  _id?: string;
   id: {
     timestamp: number;
     date: string;
@@ -85,7 +86,8 @@ export class RecetaService {
 
   actualizarReceta(receta: Receta): Observable<HttpResponse<Receta>> {
     const headers = this.makeHeaders();
-    return this.http.put<Receta>(this.baseUrl + '/recetas/', receta, {
+    const recetaId = receta._id ?? receta.id?.timestamp?.toString();
+    return this.http.put<Receta>(this.baseUrl + `/recetas/${recetaId}`, receta, {
       observe: 'response',
       headers,
     });
