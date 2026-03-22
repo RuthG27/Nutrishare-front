@@ -9,7 +9,7 @@
       <label>Nombre</label>
       <input type="text" formControlName="nombre" />
       <small *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
-      El nombre es obligatorio
+        El nombre es obligatorio
       </small>
 
     </div>
@@ -32,7 +32,7 @@
       </select>
 
     </div>
-  
+
     <div class="contenedor">
       <label>Categoría</label>
       <select formControlName="categoria">
@@ -80,8 +80,8 @@
 
     <div class="contenedor">
 
-        <label>Pasos</label>
-        <textarea formControlName="pasos"></textarea>
+      <label>Pasos</label>
+      <textarea formControlName="pasos"></textarea>
 
     </div>
 
@@ -90,12 +90,8 @@
 
       <div class="lista-ingredientes">
         <div *ngFor="let producto of productos" class="ingrediente-item">
-          <input
-            type="checkbox"
-            [value]="producto._id"
-            (change)="onIngredienteChange($event)"
-            [checked]="form.value.ingredientes?.includes(producto._id)"
-          />
+          <input type="checkbox" [value]="producto._id" (change)="onIngredienteChange($event)"
+            [checked]="form.value.ingredientes?.includes(producto._id)" />
           <span>{{ producto.nombre }}</span>
         </div>
       </div>
@@ -111,7 +107,7 @@
     <div class="contenedor">
 
       <label>Imagen (URL)</label>
-      <input type="text" formControlName="img" />
+      <input type="url" formControlName="img" />
 
     </div>
 
@@ -121,14 +117,14 @@
 
     </div>
 
-    
-      <button type="submit" [disabled]="form.invalid" class="btn-borrar">
-        {{ esEdicion ? 'Guardar cambios' : 'Crear receta' }}
-      </button>
-      
-      <button type="button" class="btn-cancelar" (click)="cerrar()">
-        Cerrar formulario
-      </button>
+
+    <button type="submit" [disabled]="form.invalid" class="btn-borrar">
+      {{ esEdicion ? 'Guardar cambios' : 'Crear receta' }}
+    </button>
+
+    <button type="button" class="btn-cancelar" (click)="cerrar()">
+      Cerrar formulario
+    </button>
 
   </form>
 

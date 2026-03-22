@@ -16,9 +16,9 @@ import { AuthRestService } from '../../features/auth/services/auth-rest.service'
   styleUrls: ['./recetas.css'],
 })
 export class RecetasComponent implements OnInit {
-
   recetas: Receta[] = [];
   listado_recetas_filtrado: Receta[] = [];
+  favoritosIds = new Set<string>();
 
   opcionesCocina: string[] = [];
   opcionesCategoria: string[] = [];
@@ -36,7 +36,7 @@ export class RecetasComponent implements OnInit {
     categoria: '',
     dificultad: '',
     tiempo_preparacion: '',
-    ingrediente: [] as string[],
+    ingrediente: '',
     nutrientes_totales: '',
     puntuacion: '',
   };
@@ -46,15 +46,62 @@ export class RecetasComponent implements OnInit {
   constructor(
     private recetasService: RecetasService,
     private productosService: ProductosService,
-    private authService: AuthRestService
-  ) { }
+    private authService: AuthRestService,
+  ) {}
 
   ngOnInit(): void {
     this.isLogged = this.authService.isLogged();
+    if (this.isLogged) {
+      this.cargarFavoritas();
+    }
+
     this.authService.loginEmitter.subscribe((logged: boolean) => {
       this.isLogged = logged;
+      if (logged) {
+        this.cargarFavoritas();
+        return;
+      }
+
+      this.favoritosIds.clear();
     });
     this.cargarRecetas();
+  }
+
+  private getRecetaIdFromFavorito(item: any): string | null {
+    return (
+      item?.receta?._id ??
+      item?.recetaId ??
+      item?.receta?._id?.toString?.() ??
+      item?.receta?.id?.timestamp?.toString?.() ??
+      null
+    );
+  }
+
+  private cargarFavoritas(): void {
+    this.recetasService.getFavoritos().subscribe({
+      next: (response: any) => {
+        const favoritos = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : Array.isArray(response?.body?.data)
+              ? response.body.data
+              : [];
+
+        this.favoritosIds = new Set(
+          favoritos
+            .map((favorito: any) => this.getRecetaIdFromFavorito(favorito))
+            .filter((id: string | null): id is string => !!id),
+        );
+      },
+      error: () => {
+        this.favoritosIds.clear();
+      },
+    });
+  }
+
+  esFavorita(recetaId: string): boolean {
+    return this.favoritosIds.has(recetaId);
   }
 
   cargarRecetas(): void {
@@ -68,32 +115,39 @@ export class RecetasComponent implements OnInit {
       this.opcionesNutrientesTotales = this.posiblesValores('nutrientes_totales');
       this.opcionesPuntuacion = this.posiblesValores('puntuacion');
 
-      const idsIngredientesUsados = Array.from(
-        new Set(this.recetas.flatMap(r => r.ingredientes))
-      );
-
       this.productosService.getProductos().subscribe((productos: Producto[]) => {
-        this.opcionesIngredientesProductos = productos
-          .filter(p => idsIngredientesUsados.includes(p._id))
-          .sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.opcionesIngredientesProductos = productos.sort((a, b) =>
+          a.nombre.localeCompare(b.nombre),
+        );
       });
     });
   }
 
   posiblesValores(atributo: keyof Receta): string[] {
-    return Array.from(new Set(this.recetas.map(elem => String(elem[atributo]))));
+    return Array.from(new Set(this.recetas.map((elem) => String(elem[atributo]))));
+  }
+
+  getNombreIngredienteSeleccionado(): string {
+    if (!this.filtros.ingrediente) {
+      return 'Todos los ingredientes';
+    }
+
+    const ingrediente = this.opcionesIngredientesProductos.find(
+      (prod) => prod._id === this.filtros.ingrediente,
+    );
+
+    return ingrediente?.nombre ?? 'Todos los ingredientes';
   }
 
   aplicarFiltros(): void {
-    this.listado_recetas_filtrado = this.recetas.filter(r => {
+    this.listado_recetas_filtrado = this.recetas.filter((r) => {
       return (
         (this.filtros.nombre === '' ||
           r.nombre.toLowerCase().includes(this.filtros.nombre.toLowerCase())) &&
         (this.filtros.cocina === '' || r.cocina === this.filtros.cocina) &&
         (this.filtros.categoria === '' || r.categoria === this.filtros.categoria) &&
         (this.filtros.dificultad === '' || r.dificultad === this.filtros.dificultad) &&
-        (this.filtros.ingrediente.length === 0 ||
-          this.filtros.ingrediente.every(id => r.ingredientes.includes(id)))
+        (this.filtros.ingrediente === '' || r.ingredientes.includes(this.filtros.ingrediente))
       );
     });
   }
@@ -105,7 +159,7 @@ export class RecetasComponent implements OnInit {
       categoria: '',
       dificultad: '',
       tiempo_preparacion: '',
-      ingrediente: [],
+      ingrediente: '',
       nutrientes_totales: '',
       puntuacion: '',
     };
@@ -113,8 +167,24 @@ export class RecetasComponent implements OnInit {
   }
 
   guardarFavorita(receta: Receta): void {
-    console.log('Guardando favorita:', receta);
-    this.recetasService.guardarReceta(receta);
+    if (!this.isLogged || !receta?._id) {
+      return;
+    }
+
+    if (this.esFavorita(receta._id)) {
+      this.recetasService.eliminarFavorito(receta._id).subscribe({
+        next: () => {
+          this.favoritosIds.delete(receta._id);
+        },
+      });
+      return;
+    }
+
+    this.recetasService.agregarFavorito(receta._id).subscribe({
+      next: () => {
+        this.favoritosIds.add(receta._id);
+      },
+    });
   }
 
   //FORMULARIO
@@ -128,114 +198,3 @@ export class RecetasComponent implements OnInit {
     this.cargarRecetas();
   }
 }
-
-/*import { Component } from '@angular/core';
-import { Receta } from '../../services/recetas';
-//import { Recetas } from '../../services/recetas';
-import { Producto } from '../../services/productos';
-import { Productos } from '../../services/productos';
-import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-
-
-@Component({
-  selector: 'app-recetas',
-  imports: [RouterLink, FormsModule],
-  templateUrl: './recetas.html',
-  styleUrl: './recetas.css',
-})
-export class RecetasComponent {
-  recetas: Receta[] = [];
-  listado_recetas_filtrado: Receta[] = [];
-
-  opcionesCocina: string[] = [];
-  opcionesCategoria: string[] = [];
-  opcionesDificultad: string[] = [];
-  opcionesIngredientesProductos: Producto[] = [];
-  opcionesTiempoPreparacion: string [] = [];
-  opcionesNutrientesTotales: string [] = [];
-  opcionesPuntuacion: string [] = [];
-
-  filtros = {
-    nombre: '',
-    cocina: '',
-    categoria: '',
-    dificultad: '',
-    tiempo_preparacion: '',
-    ingrediente: [] as string[],
-    nutrientes_totales: '',
-    puntuacion: ''  
-  }
-
-  posiblesValores(atributo: keyof Receta): string[] {
-    return Array.from(new Set(this.recetas.map(elem => String(elem[atributo]))));
-  }
-
-  constructor(private receta: Receta, private productosService: Productos) {
-    this.recetas = this.receta.getRecetas();
-
-    //inicialmente el listado_recetas:filtrado será todas las recetas
-    this.listado_recetas_filtrado = [...this.recetas];
-
-    this.opcionesCocina = this.posiblesValores("cocina");
-    this.opcionesCategoria = this.posiblesValores("categoria");
-    this.opcionesDificultad = this.posiblesValores("dificultad");
-    this.opcionesNutrientesTotales = this.posiblesValores("nutrientes_totales");
-    this.opcionesPuntuacion = this.posiblesValores("puntuacion");
-
-    const idsIngredientesUsados = Array.from(
-      new Set(this.recetas.flatMap((r) => r.ingredientes))
-    );
-
-    const todosLosProductos = this.productosService.getProductos();
-      this.opcionesIngredientesProductos = todosLosProductos
-        .filter((p) => idsIngredientesUsados.includes(p._id))
-        .sort((a, b) => a.nombre.localeCompare(b.nombre));
-  }
-  
-  aplicarFiltros(){
-    //confiamos en que filtros está actualizado con los filtros
-    //p.ej.
-    //filtros = {cocina: 'Griega', categoria: 'desayuno'}
-    console.log(this.filtros);
-
-    //filtramos recetas
-    //creamos listado_recetas_filtrado para que no se 
-    this.listado_recetas_filtrado = this.recetas.filter((r) => {
-
-      return(
-        //El nombre no tiene por qué coincidir 
-        (this.filtros.nombre === '' || r.nombre.toLowerCase().includes(this.filtros.nombre.toLowerCase())) &&
-        (this.filtros.cocina === '' || r.cocina === this.filtros.cocina) && 
-        (this.filtros.categoria === '' || r.categoria === this.filtros.categoria) &&
-        //corta el tiempo de preparación donde tenga el espacio, coge el primer valor
-        (this.filtros.tiempo_preparacion === '' || Number(r.tiempo_preparacion.split(' ')[0]) === Number(this.filtros.tiempo_preparacion)) &&
-        (this.filtros.dificultad === '' || r.dificultad == this.filtros.dificultad) &&
-        (this.filtros.ingrediente.length === 0 || this.filtros.ingrediente.every(idIng => r.ingredientes.includes(idIng)))
-      );
-        
-    });
-  }
-
-  //Recibe el id de la receta que quiere guardar
-  //void -> no calcula nada
-  guardarFavorita(receta: Receta): void{
-    this.receta.guardarReceta(receta);
-  }
-
-  borrarFiltros(){
-    this.filtros = {
-      nombre: '',
-      cocina: '',
-      categoria: '',
-      dificultad: '',
-      tiempo_preparacion: '',
-      ingrediente: [],
-      nutrientes_totales: '',
-      puntuacion: ''  
-    };
-
-    this.listado_recetas_filtrado = [...this.recetas];
-  }
-
-}*/

@@ -8,15 +8,11 @@ import { Producto, ProductosService } from '../../services/productos';
 @Component({
   selector: 'app-form-recetas',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-recetas.html',
   styleUrls: ['./form-recetas.css'],
 })
 export class FormRecetasComponent implements OnInit {
-
   @Input() receta?: Receta;
   @Output() cerrarFormulario = new EventEmitter<void>();
 
@@ -27,8 +23,8 @@ export class FormRecetasComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private recetasService: RecetasService,
-    private productosService: ProductosService
-  ) { }
+    private productosService: ProductosService,
+  ) {}
 
   ngOnInit(): void {
     this.esEdicion = !!this.receta;
@@ -48,33 +44,27 @@ export class FormRecetasComponent implements OnInit {
       categoria: [this.receta?.categoria ?? '', Validators.required],
       dificultad: [this.receta?.dificultad ?? '', Validators.required],
 
-      tiempo_preparacion: [
-        tiempoPInicial,
-        [Validators.required, Validators.min(1)]
-      ],
+      tiempo_preparacion: [tiempoPInicial, [Validators.required, Validators.min(1)]],
 
       pasos: [pasosInicial, Validators.required],
 
-      ingredientes: [
-        this.receta?.ingredientes ?? [],
-        Validators.required
-      ],
+      ingredientes: [this.receta?.ingredientes ?? [], Validators.required],
 
-      nutrientes_totales: [
-        caloriasInicial,
-        Validators.required
-      ],
+      nutrientes_totales: [caloriasInicial, Validators.required],
 
-      img: [this.receta?.img ?? '', Validators.required],
+      img: [
+        this.receta?.img ?? 'https://imagenes.nutri-share.com/recetas/plato_saludable_generico.png',
+        Validators.required,
+      ],
 
       puntuacion: [
         this.receta?.puntuacion ?? null,
-        [Validators.required, Validators.min(0), Validators.max(5)]
-      ]
+        [Validators.required, Validators.min(0), Validators.max(5)],
+      ],
     });
 
     // Cargar productos desde la BBDD
-    this.productosService.getProductos().subscribe(productos => {
+    this.productosService.getProductos().subscribe((productos) => {
       this.productos = productos;
     });
   }
@@ -86,7 +76,10 @@ export class FormRecetasComponent implements OnInit {
 
     let pasosArray: string[] = [];
     if (typeof formValue.pasos === 'string') {
-      pasosArray = formValue.pasos.split('\n').map((p: string) => p.trim()).filter((p: string) => p !== '');
+      pasosArray = formValue.pasos
+        .split('\n')
+        .map((p: string) => p.trim())
+        .filter((p: string) => p !== '');
     } else {
       pasosArray = formValue.pasos;
     }
@@ -96,14 +89,14 @@ export class FormRecetasComponent implements OnInit {
       protein_g: 0,
       fat_g: 0,
       carbs_g: 0,
-      fiber_g: 0
+      fiber_g: 0,
     };
 
     const datos: any = {
       ...formValue,
-      tiempo_preparacion: String(formValue.tiempo_preparacion) + " min",
+      tiempo_preparacion: String(formValue.tiempo_preparacion) + ' min',
       pasos: pasosArray,
-      nutrientes_totales: nutrientesObj
+      nutrientes_totales: nutrientesObj,
     };
 
     if (this.esEdicion && this.receta?._id) {
@@ -131,13 +124,12 @@ export class FormRecetasComponent implements OnInit {
 
     if (checkbox.checked) {
       this.form.patchValue({
-        ingredientes: [...ingredientes, checkbox.value]
+        ingredientes: [...ingredientes, checkbox.value],
       });
     } else {
       this.form.patchValue({
-        ingredientes: ingredientes.filter(id => id !== checkbox.value)
+        ingredientes: ingredientes.filter((id) => id !== checkbox.value),
       });
     }
   }
-
 }

@@ -16,6 +16,28 @@
   box-sizing: border-box;
 }
 
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 1rem;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1.3fr 0.7fr;
@@ -51,7 +73,7 @@ h1 {
   border-radius: 999px;
   object-fit: cover;
   border: 6px solid #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* INGREDIENTES */
@@ -99,7 +121,6 @@ h3 {
   line-height: 1.2;
   max-width: 90px;
   word-break: break-word;
-
 }
 
 /* PASOS */
@@ -136,10 +157,9 @@ button:hover {
   background-color: #c1ff72;
   color: black;
 }
-.button-editar{
+.button-editar {
   color: #c1ff72;
 }
-.button-eliminar{
+.button-eliminar {
   color: red;
 }
-

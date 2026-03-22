@@ -1,69 +1,80 @@
 <div id="contenedor-detalle-recetas">
-  <ng-container *ngIf="recetaSeleccionada; else noEncontrada">
-    <div class="grid">
+  @if (successMessage) {
+  <div class="success-message">{{ successMessage }}</div>
+  }
 
-      <!-- CONTENIDO DE LA RECETA -->
-      <div>
-        <h1>{{ recetaSeleccionada.nombre }}</h1>
+  @if (errorMessage) {
+  <div class="error-message">{{ errorMessage }}</div>
+  }
 
-        <div class="ficha-receta">
-          <p><strong>Cocina:</strong> {{ recetaSeleccionada.cocina }}</p>
-          <p><strong>Categoría:</strong> {{ recetaSeleccionada.categoria }}</p>
-          <p><strong>Dificultad:</strong> {{ recetaSeleccionada.dificultad }}</p>
-          <p><strong>Tiempo de preparación:</strong> {{ recetaSeleccionada.tiempo_preparacion }}</p>
-        </div>
+  @if (recetaSeleccionada) {
+  <div class="grid">
 
-        <h3>Ingredientes</h3>
-        <div class="lista-ingredientes">
-          <div class="ingrediente" *ngFor="let prod of ingredientesSeleccionados">
-            <div class="circulo">
-              <img [src]="prod.img" [alt]="prod.nombre" />
-            </div>
-            <span>{{ prod.nombre }}</span>
+    <!-- CONTENIDO DE LA RECETA -->
+    <div>
+      <h1>{{ recetaSeleccionada.nombre }}</h1>
+
+      <div class="ficha-receta">
+        <p><strong>Cocina:</strong> {{ recetaSeleccionada.cocina }}</p>
+        <p><strong>Categoría:</strong> {{ recetaSeleccionada.categoria }}</p>
+        <p><strong>Dificultad:</strong> {{ recetaSeleccionada.dificultad }}</p>
+        <p><strong>Tiempo de preparación:</strong> {{ recetaSeleccionada.tiempo_preparacion }}</p>
+      </div>
+
+      <h3>Ingredientes</h3>
+      <div class="lista-ingredientes">
+        @for (prod of ingredientesSeleccionados; track prod._id) {
+        <div class="ingrediente">
+          <div class="circulo">
+            <img [src]="prod.img" [alt]="prod.nombre" />
           </div>
+          <span>{{ prod.nombre }}</span>
         </div>
-
-
-        <h3>Pasos</h3>
-        <ol>
-          <li *ngFor="let paso of recetaSeleccionada.pasos">
-            {{ paso }}
-          </li>
-        </ol>
-
-        <button type="button" (click)="volverAtras()">
-          Volver
-        </button>
-        <!-- <button type="button" (click)="guardarFavorita"> -->
-        <button type="button">
-          Favorita
-        </button>
-        <!-- Botones crud: actualizar + eliminar -->
-
-        <button *ngIf="isLogged" (click)="mostrarFormulario = true" class="button-editar">Editar</button>
-
-        <app-form-recetas *ngIf="mostrarFormulario" [receta]="recetaSeleccionada"
-          (cerrarFormulario)="mostrarFormulario = false">
-
-
-        </app-form-recetas>
-        <button *ngIf="isLogged" (click)="eliminar(recetaSeleccionada._id)" type="button"
-          class="button-eliminar">Eliminar</button>
+        }
       </div>
 
-      <!-- IMAGEN DE LA RECETA -->
-      <div class="foto-receta">
-        <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
-      </div>
-    </div>
-  </ng-container>
+      <h3>Pasos</h3>
+      <ol>
+        @for (paso of recetaSeleccionada.pasos; track $index) {
+        <li>{{ paso }}</li>
+        }
+      </ol>
 
-  <ng-template #noEncontrada>
-    <div class="no-encontrada">
-      <p>No se ha encontrado la receta.</p>
-      <button class="btn-volver" type="button" (click)="volverAtras()">
+      <button type="button" (click)="volverAtras()">
         Volver
       </button>
+      @if (isLogged) {
+      <button type="button" (click)="toggleFavorita()">
+        {{ esFavorita(recetaSeleccionada._id) ? 'Quitar favorita' : 'Favorita' }}
+      </button>
+      }
+      <!-- Botones crud: actualizar + eliminar -->
+
+      @if (canManageSelectedReceta()) {
+      <button (click)="mostrarFormulario = true" class="button-editar">Editar</button>
+      }
+
+      @if (mostrarFormulario && canManageSelectedReceta()) {
+      <app-form-recetas [receta]="recetaSeleccionada" (cerrarFormulario)="mostrarFormulario = false">
+      </app-form-recetas>
+      }
+
+      @if (canManageSelectedReceta()) {
+      <button (click)="eliminar(recetaSeleccionada._id)" type="button" class="button-eliminar">Eliminar</button>
+      }
     </div>
-  </ng-template>
+
+    <!-- IMAGEN DE LA RECETA -->
+    <div class="foto-receta">
+      <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
+    </div>
+  </div>
+  } @else {
+  <div class="no-encontrada">
+    <p>No se ha encontrado la receta.</p>
+    <button class="btn-volver" type="button" (click)="volverAtras()">
+      Volver
+    </button>
+  </div>
+  }
 </div>

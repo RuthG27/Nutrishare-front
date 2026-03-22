@@ -31,6 +31,10 @@ export interface Receta {
   puntuacion: number;
 }
 
+export interface ApiResponse<T> {
+  data?: T;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -66,6 +70,11 @@ export class RecetaService {
     return this.http.get<Receta[]>(this.baseUrl + '/recetas/todas', { headers });
   }
 
+  getMisRecetas(): Observable<Receta[]> {
+    const headers = this.makeHeaders();
+    return this.http.get<Receta[]>(this.baseUrl + '/recetas/mis-recetas', { headers });
+  }
+
   crearReceta(receta: Receta): Observable<HttpResponse<Receta>> {
     const headers = this.makeHeaders();
     return this.http.post<Receta>(this.baseUrl + '/recetas', receta, {
@@ -86,6 +95,27 @@ export class RecetaService {
     const headers = this.makeHeaders();
     return this.http.delete<string>(this.baseUrl + `/recetas/${id}`, {
       observe: 'response',
+      headers,
+    });
+  }
+
+  getFavoritos(): Observable<ApiResponse<any[]>> {
+    const headers = this.makeHeaders();
+    return this.http.get<ApiResponse<any[]>>(this.baseUrl + '/favoritos', { headers });
+  }
+
+  agregarFavorito(recetaId: string): Observable<ApiResponse<any>> {
+    const headers = this.makeHeaders();
+    return this.http.post<ApiResponse<any>>(
+      `${this.baseUrl}/favoritos/agregar/${recetaId}`,
+      {},
+      { headers },
+    );
+  }
+
+  eliminarFavorito(recetaId: string): Observable<ApiResponse<string>> {
+    const headers = this.makeHeaders();
+    return this.http.delete<ApiResponse<string>>(`${this.baseUrl}/favoritos/eliminar/${recetaId}`, {
       headers,
     });
   }

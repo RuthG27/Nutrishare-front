@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Receta } from '../../../features/receta/receta.service';
 import { ProductosService } from '../../../services/productos';
@@ -11,26 +11,75 @@ import { RecetaPdfService } from '../../../features/receta/receta-pdf.service';
   templateUrl: './recipe-detail-modal.html',
   styleUrl: './recipe-detail-modal.css',
 })
-export class RecipeDetailModalComponent {
+export class RecipeDetailModalComponent implements OnInit {
   @Input() recipe: Receta | null = null;
   @Input() isVisible: boolean = false;
   @Output() close = new EventEmitter<void>();
 
   isDownloading = false;
+  private ingredientNameById = new Map<string, string>();
 
   constructor(
     private productosService: ProductosService,
     private recetaPdfService: RecetaPdfService,
   ) {}
 
+  ngOnInit(): void {
+    this.productosService.getProductos().subscribe({
+      next: (productos: any[]) => {
+        this.ingredientNameById.clear();
+        productos.forEach((producto) => {
+          if (producto?._id && producto?.nombre) {
+            this.ingredientNameById.set(producto._id, producto.nombre);
+          }
+        });
+      },
+    });
+  }
+
   closeModal() {
     this.close.emit();
   }
 
-  getIngredientName(ingrediente: { timestamp: number; date: string }): string {
-    // Por ahora mostramos el ID del ingrediente hasta tener el servicio de productos
-    // TODO: Implementar resolución de nombres de productos cuando esté disponible
-    return `Ingrediente ${ingrediente.timestamp}`;
+  private getRecipeAny(): any {
+    return this.recipe as any;
+  }
+
+  getRecipeTime(): string {
+    const recipe = this.getRecipeAny();
+    return recipe?.tiempo_preparacion ?? recipe?.tiempoPreparacion ?? '-';
+  }
+
+  getRecipeNutrients() {
+    const recipe = this.getRecipeAny();
+    const snake = recipe?.nutrientes_totales;
+    const camel = recipe?.nutrientes;
+
+    return {
+      calorias: snake?.calories ?? camel?.calorias ?? 0,
+      proteinas: snake?.protein_g ?? camel?.proteinas ?? 0,
+      grasasTotales: snake?.fat_g ?? camel?.grasasTotales ?? 0,
+      carbohidratos: snake?.carbs_g ?? camel?.carbohidratos ?? 0,
+      fibra: snake?.fiber_g ?? camel?.fibra ?? 0,
+    };
+  }
+
+  getIngredientName(ingrediente: any): string {
+    if (!ingrediente) return 'Ingrediente';
+
+    if (typeof ingrediente === 'string') {
+      return this.ingredientNameById.get(ingrediente) ?? ingrediente;
+    }
+
+    if (typeof ingrediente === 'object') {
+      const id = ingrediente._id ?? ingrediente.id ?? ingrediente.timestamp?.toString?.();
+      if (id && this.ingredientNameById.has(id)) {
+        return this.ingredientNameById.get(id) ?? id;
+      }
+      return ingrediente.nombre ?? `Ingrediente ${id ?? ''}`.trim();
+    }
+
+    return String(ingrediente);
   }
 
   getStars(rating: number): string[] {

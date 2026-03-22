@@ -1,95 +1,94 @@
 @if (isVisible && recipe) {
-  <div class="recipe-modal-overlay visible">
-    <div class="recipe-modal">
-      <!-- Header -->
-      <div class="modal-header">
-        <button (click)="closeModal()" class="modal-close">×</button>
-        <h2>{{ recipe.nombre }}</h2>
-        <div class="rating">
-          @for (star of getStars(recipe.puntuacion); track $index) {
-            <span class="star" [class.filled]="star === 'full'">★</span>
+<div class="recipe-modal-overlay visible">
+  <div class="recipe-modal">
+    <!-- Header -->
+    <div class="modal-header">
+      <button (click)="closeModal()" class="modal-close">×</button>
+      <h2>{{ recipe.nombre }}</h2>
+      <div class="rating">
+        @for (star of getStars(recipe.puntuacion); track $index) {
+        <span class="star" [class.filled]="star === 'full'">★</span>
+        }
+        <span class="rating-text">{{ recipe.puntuacion }}/5</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Image -->
+      <div class="recipe-image-container">
+        <button class="download-btn" (click)="downloadPdf()" [disabled]="!canDownload() || isDownloading" [title]="
+              canDownload() ? 'Descargar receta en PDF' : 'Datos insuficientes para descargar'
+            ">
+          @if (isDownloading) {
+          <span class="spinner-icon">⟳</span>
+          <span class="download-text">Descargando...</span>
+          } @else {
+          <span class="download-text">Descargar PDF</span>
           }
-          <span class="rating-text">{{ recipe.puntuacion }}/5</span>
+        </button>
+        <img [src]="recipe.img" [alt]="recipe.nombre" class="recipe-image" />
+        <div class="recipe-badges">
+          <span class="badge">{{ recipe.dificultad }}</span>
+          <span class="badge">{{ getRecipeTime() }}</span>
         </div>
       </div>
 
-      <!-- Content -->
-      <div class="modal-content">
-        <!-- Image -->
-        <div class="recipe-image-container">
-          <button
-            class="download-btn"
-            (click)="downloadPdf()"
-            [disabled]="!canDownload() || isDownloading"
-            [title]="
-              canDownload() ? 'Descargar receta en PDF' : 'Datos insuficientes para descargar'
-            "
-          >
-            @if (isDownloading) {
-              <span class="spinner-icon">⟳</span>
-              <span class="download-text">Descargando...</span>
-            } @else {
-              <span class="download-text">Descargar PDF</span>
-            }
-          </button>
-          <img [src]="recipe.img" [alt]="recipe.nombre" class="recipe-image" />
-          <div class="recipe-badges">
-            <span class="badge">{{ recipe.dificultad }}</span>
-            <span class="badge">{{ recipe.tiempoPreparacion }}</span>
+      <!-- Info -->
+      <div class="recipe-info">
+        <p><strong>Cocina:</strong> {{ recipe.cocina }}</p>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="recipe-section">
+        <h3>Ingredientes</h3>
+        <div class="ingredients">
+          @for (ingredientId of recipe.ingredientes; track ingredientId) {
+          <span class="ingredient">{{ getIngredientName(ingredientId) }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="recipe-section">
+        <h3>Pasos</h3>
+        <div class="steps">
+          @for (step of recipe.pasos; track $index; let i = $index) {
+          <div class="step">
+            <span class="step-number">{{ i + 1 }}</span>
+            <p>{{ step }}</p>
           </div>
+          }
         </div>
+      </div>
 
-        <!-- Info -->
-        <div class="recipe-info">
-          <p><strong>Cocina:</strong> {{ recipe.cocina }}</p>
-        </div>
-
-        <!-- Ingredients -->
-        <div class="recipe-section">
-          <h3>Ingredientes</h3>
-          <div class="ingredients">
-            @for (ingredientId of recipe.ingredientes; track ingredientId) {
-              <span class="ingredient">{{ getIngredientName(ingredientId) }}</span>
-            }
+      <!-- Nutrition -->
+      <div class="recipe-section">
+        <h3>Información Nutricional</h3>
+        <div class="nutrition">
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ getRecipeNutrients().calorias }}</span>
+            <span class="nutrition-label">CALORÍAS</span>
           </div>
-        </div>
-
-        <!-- Steps -->
-        <div class="recipe-section">
-          <h3>Pasos</h3>
-          <div class="steps">
-            @for (step of recipe.pasos; track $index; let i = $index) {
-              <div class="step">
-                <span class="step-number">{{ i + 1 }}</span>
-                <p>{{ step }}</p>
-              </div>
-            }
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ getRecipeNutrients().proteinas }}g</span>
+            <span class="nutrition-label">PROTEÍNAS</span>
           </div>
-        </div>
-
-        <!-- Nutrition -->
-        <div class="recipe-section">
-          <h3>Información Nutricional</h3>
-          <div class="nutrition">
-            <div class="nutrition-item">
-              <span class="nutrition-value">{{ recipe.nutrientes.calorias || 0 }}</span>
-              <span class="nutrition-label">CALORÍAS</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-value">{{ recipe.nutrientes.proteinas || 0 }}g</span>
-              <span class="nutrition-label">PROTEÍNAS</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-value">{{ recipe.nutrientes.grasasTotales || 0 }}g</span>
-              <span class="nutrition-label">GRASAS</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-value">{{ recipe.nutrientes.carbohidratos || 0 }}g</span>
-              <span class="nutrition-label">CARBOHIDRATOS</span>
-            </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ getRecipeNutrients().grasasTotales }}g</span>
+            <span class="nutrition-label">GRASAS</span>
+          </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ getRecipeNutrients().carbohidratos }}g</span>
+            <span class="nutrition-label">CARBOHIDRATOS</span>
+          </div>
+          <div class="nutrition-item">
+            <span class="nutrition-value">{{ getRecipeNutrients().fibra }}g</span>
+            <span class="nutrition-label">FIBRA</span>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 }
