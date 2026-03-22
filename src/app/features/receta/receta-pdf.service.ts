@@ -1,13 +1,43 @@
 import { Injectable } from '@angular/core';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { Receta, Nutrientes } from './receta.service';
-import { Productos, Producto } from '../../services/productos';
+import { Producto, ProductosService } from '../../services/productos';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecetaPdfService {
-  constructor(private productosService: Productos) {}
+  private ingredientNameById = new Map<string, string>();
+
+  constructor(private productosService: ProductosService) {
+    this.productosService.getProductos().subscribe({
+      next: (productos: Producto[]) => {
+        this.ingredientNameById.clear();
+        productos.forEach((producto) => {
+          if (producto?._id && producto?.nombre) {
+            this.ingredientNameById.set(producto._id, producto.nombre);
+          }
+        });
+      },
+    });
+  }
+
+  private getTiempoPreparacion(receta: any): string {
+    return receta?.tiempo_preparacion ?? receta?.tiempoPreparacion ?? 'No especificado';
+  }
+
+  private getNutrientes(receta: any) {
+    const snake = receta?.nutrientes_totales;
+    const camel = receta?.nutrientes;
+
+    return {
+      calorias: snake?.calories ?? camel?.calorias ?? 0,
+      proteinas: snake?.protein_g ?? camel?.proteinas ?? 0,
+      carbohidratos: snake?.carbs_g ?? camel?.carbohidratos ?? 0,
+      grasasTotales: snake?.fat_g ?? camel?.grasasTotales ?? 0,
+      fibra: snake?.fiber_g ?? camel?.fibra ?? 0,
+    };
+  }
 
   async generateRecipePdfBytes(receta: Receta): Promise<Uint8Array> {
     if (!receta.nombre || !receta.pasos || !receta.ingredientes) {
@@ -113,20 +143,22 @@ export class RecetaPdfService {
 
     addText(receta.nombre, 24, helveticaBoldFont);
 
-    const subtitle = `${receta.cocina || 'Sin cocina especificada'} • ${receta.dificultad || 'Dificultad no especificada'}`;
+    const recetaAny = receta as any;
+    const subtitle = `${recetaAny.cocina || 'Sin cocina especificada'} • ${recetaAny.dificultad || 'Dificultad no especificada'}`;
     addText(subtitle, 14, helveticaObliqueFont);
     addSpace(20);
 
     addText('Resumen', 16, helveticaBoldFont);
+    const tiempoPreparacion = this.getTiempoPreparacion(recetaAny);
     const summary = [
-      `Tiempo de preparación: ${receta.tiempoPreparacion || 'No especificado'}`,
-      `Puntuación: ${receta.puntuacion || 0}/5`,
+      `Tiempo de preparación: ${tiempoPreparacion}`,
+      `Puntuación: ${recetaAny.puntuacion || 0}/5`,
     ];
     addList(summary, 12);
     addSpace(20);
 
     addText('Ingredientes', 16, helveticaBoldFont);
-    const ingredientesNombres = this.getIngredientesNombres(receta.ingredientes);
+    const ingredientesNombres = this.getIngredientesNombres(recetaAny.ingredientes ?? []);
     addList(ingredientesNombres, 12);
     addSpace(20);
 
@@ -134,7 +166,8 @@ export class RecetaPdfService {
     addNumberedList(receta.pasos, 12);
 
     // Tabla nutricional - FORZAR NUEVA PÁGINA
-    if (receta.nutrientes) {
+    const nutrientes = this.getNutrientes(recetaAny);
+    if (nutrientes) {
       page = pdfDoc.addPage([pageWidth, pageHeight]);
       yPosition = pageHeight - margin;
 
@@ -145,17 +178,17 @@ export class RecetaPdfService {
         ['Nutriente', 'Valor', 'Nutriente', 'Valor'],
         [
           'Calorías',
-          `${receta.nutrientes.calorias || 0} kcal`,
+          `${nutrientes.calorias || 0} kcal`,
           'Proteína',
-          `${receta.nutrientes.proteinas || 0} g`,
+          `${nutrientes.proteinas || 0} g`,
         ],
         [
           'Carbohidratos',
-          `${receta.nutrientes.carbohidratos || 0} g`,
+          `${nutrientes.carbohidratos || 0} g`,
           'Grasa',
-          `${receta.nutrientes.grasasTotales || 0} g`,
+          `${nutrientes.grasasTotales || 0} g`,
         ],
-        ['Fibra', `${receta.nutrientes.fibra || 0} g`, '', ''],
+        ['Fibra', `${nutrientes.fibra || 0} g`, '', ''],
       ];
 
       const cellHeight = 25;
@@ -253,10 +286,30 @@ export class RecetaPdfService {
     }
   }
 
-  private getIngredientesNombres(ingredientes: { timestamp: number; date: string }[]): string[] {
-    // Por ahora mostramos IDs de ingredientes hasta tener el servicio de productos
-    // TODO: Implementar resolución de nombres de productos cuando esté disponible
-    return ingredientes.map((ingrediente) => `Ingrediente ${ingrediente.timestamp}`);
+  private getIngredientesNombres(ingredientes: any[]): string[] {
+    if (!Array.isArray(ingredientes)) {
+      return [];
+    }
+
+    return ingredientes.map((ingrediente) => {
+      if (!ingrediente) {
+        return 'Ingrediente';
+      }
+
+      if (typeof ingrediente === 'string') {
+        return this.ingredientNameById.get(ingrediente) ?? ingrediente;
+      }
+
+      if (typeof ingrediente === 'object') {
+        const id = ingrediente._id ?? ingrediente.id ?? ingrediente.timestamp?.toString?.();
+        if (id && this.ingredientNameById.has(id)) {
+          return this.ingredientNameById.get(id) ?? id;
+        }
+        return ingrediente.nombre ?? (id ? `Ingrediente ${id}` : 'Ingrediente');
+      }
+
+      return String(ingrediente);
+    });
   }
 
   canGeneratePdf(receta: Receta): boolean {

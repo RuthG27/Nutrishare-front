@@ -1,30 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Receta } from '../../../services/recetas';
-import { Recetas } from '../../../services/recetas';
-import { Productos } from '../../../services/productos';
+import { RecetasService } from '../../../services/recetas';
+import { Producto, ProductosService } from '../../../services/productos';
+import { AuthRestService } from '../../../features/auth/services/auth-rest.service';
 
 @Component({
   selector: 'app-receta-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './receta-edit.html',
   styleUrl: './receta-edit.css',
 })
 export class RecetaEdit implements OnInit {
+  form!: FormGroup;
+  productos: Producto[] = [];
   recetaId: string = '';
-  recetaForm = {
-    nombre: '',
-    cocina: '',
-    categoria: '',
-    dificultad: '',
-    tiempo_preparacion: '',
-    img: '',
-    pasos: [''],
-    ingredientes: [''],
-  };
+  recetaOriginal: any = null;
 
   errorMessage = '';
   successMessage = '';
@@ -47,11 +41,77 @@ export class RecetaEdit implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private recetasService: Recetas,
-    private productosService: Productos,
+    private fb: FormBuilder,
+    private recetasService: RecetasService,
+    private productosService: ProductosService,
+    private authService: AuthRestService,
   ) {}
 
+  private normalizeId(value: any): string | null {
+    if (!value) return null;
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'object') {
+      if (typeof value._id === 'string') return value._id;
+      if (typeof value.id === 'string') return value.id;
+      if (typeof value.timestamp === 'number') return String(value.timestamp);
+    }
+    return null;
+  }
+
+  private getCurrentUserId(): string | null {
+    const userData = this.authService.getUserData();
+    const fromUserData = this.normalizeId(userData?._id ?? userData?.id);
+    if (fromUserData) return fromUserData;
+    return this.normalizeId(this.authService.getUserIdFromToken());
+  }
+
+  private getRecipeOwnerId(receta: any): string | null {
+    return this.normalizeId(
+      receta?.userId ??
+        receta?.usuarioId ??
+        receta?.authorId ??
+        receta?.ownerId ??
+        receta?.user?._id ??
+        receta?.user?.id ??
+        receta?.usuario?._id ??
+        receta?.usuario?.id,
+    );
+  }
+
+  private canEditReceta(receta: any): boolean {
+    if (!this.authService.isLogged()) {
+      return false;
+    }
+
+    const currentUserId = this.getCurrentUserId();
+    const recipeOwnerId = this.getRecipeOwnerId(receta);
+    return !!currentUserId && !!recipeOwnerId && currentUserId === recipeOwnerId;
+  }
+
   ngOnInit(): void {
+    if (!this.authService.isLogged()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.form = this.fb.group({
+      nombre: ['', Validators.required],
+      cocina: ['', Validators.required],
+      categoria: ['', Validators.required],
+      dificultad: ['', Validators.required],
+      tiempo_preparacion: [null, [Validators.required, Validators.min(1)]],
+      pasos: ['', Validators.required],
+      ingredientes: [[]],
+      nutrientes_totales: [0, Validators.required],
+      img: ['https://imagenes.nutri-share.com/recetas/plato_saludable_generico.png'],
+      puntuacion: [0, [Validators.required, Validators.min(0), Validators.max(5)]],
+    });
+
+    this.productosService.getProductos().subscribe((productos) => {
+      this.productos = productos;
+    });
+
     this.recetaId = this.route.snapshot.paramMap.get('id') || '';
     if (this.recetaId) {
       this.cargarReceta();
@@ -62,115 +122,111 @@ export class RecetaEdit implements OnInit {
   }
 
   cargarReceta(): void {
-    const todasLasRecetas = this.recetasService.getRecetas();
-    const receta = todasLasRecetas.find((r) => r._id === this.recetaId);
+    this.recetasService.getRecetas().subscribe((todasLasRecetas: Receta[]) => {
+      const receta = todasLasRecetas.find((r) => r._id === this.recetaId);
 
-    if (receta) {
-      const todosLosProductos = this.productosService.getProductos();
-      const nombresIngredientes = receta.ingredientes
-        .map((id) => todosLosProductos.find((p) => p._id === id))
-        .filter((producto) => producto !== undefined)
-        .map((producto) => producto!.nombre);
+      if (receta) {
+        if (!this.canEditReceta(receta)) {
+          this.errorMessage = 'No tienes permisos para editar esta receta.';
+          this.loading = false;
+          this.router.navigate(['/recetas', this.recetaId]);
+          return;
+        }
 
-      this.recetaForm = {
-        nombre: receta.nombre,
-        cocina: receta.cocina,
-        categoria: receta.categoria,
-        dificultad: receta.dificultad,
-        tiempo_preparacion: receta.tiempo_preparacion,
-        img: receta.img,
-        pasos: [...receta.pasos],
-        ingredientes: nombresIngredientes.length > 0 ? nombresIngredientes : [''],
-      };
+        this.recetaOriginal = receta;
+        const pasos = Array.isArray(receta.pasos) ? receta.pasos.join('\n') : receta.pasos;
+        const tiempoPInicial = receta.tiempo_preparacion
+          ? parseInt(receta.tiempo_preparacion)
+          : null;
+        const caloriasInicial = receta.nutrientes_totales?.calories ?? null;
+
+        this.form.patchValue({
+          nombre: receta.nombre,
+          cocina: receta.cocina,
+          categoria: receta.categoria,
+          dificultad: receta.dificultad,
+          tiempo_preparacion: tiempoPInicial,
+          pasos: pasos,
+          ingredientes: receta.ingredientes || [],
+          nutrientes_totales: caloriasInicial,
+          img: receta.img,
+          puntuacion: receta.puntuacion ?? null,
+        });
+        this.loading = false;
+      } else {
+        this.errorMessage = 'Receta no encontrada';
+        this.loading = false;
+      }
+    });
+  }
+
+  onIngredienteChange(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    const ingredientes: string[] = this.form.value.ingredientes || [];
+
+    if (checkbox.checked) {
+      this.form.patchValue({
+        ingredientes: [...ingredientes, checkbox.value],
+      });
     } else {
-      this.errorMessage = 'Receta no encontrada';
+      this.form.patchValue({
+        ingredientes: ingredientes.filter((id) => id !== checkbox.value),
+      });
     }
-
-    this.loading = false;
-  }
-
-  agregarPaso(): void {
-    this.recetaForm.pasos.push('');
-  }
-
-  eliminarPaso(index: number): void {
-    if (this.recetaForm.pasos.length > 1) {
-      this.recetaForm.pasos.splice(index, 1);
-    }
-  }
-
-  agregarIngrediente(): void {
-    this.recetaForm.ingredientes.push('');
-  }
-
-  eliminarIngrediente(index: number): void {
-    if (this.recetaForm.ingredientes.length > 1) {
-      this.recetaForm.ingredientes.splice(index, 1);
-    }
-  }
-
-  validarFormulario(): boolean {
-    if (!this.recetaForm.nombre.trim()) {
-      this.errorMessage = 'El nombre de la receta es obligatorio';
-      return false;
-    }
-
-    if (!this.recetaForm.cocina) {
-      this.errorMessage = 'Selecciona un tipo de cocina';
-      return false;
-    }
-
-    if (!this.recetaForm.categoria) {
-      this.errorMessage = 'Selecciona una categoría';
-      return false;
-    }
-
-    if (!this.recetaForm.dificultad) {
-      this.errorMessage = 'Selecciona una dificultad';
-      return false;
-    }
-
-    if (!this.recetaForm.tiempo_preparacion.trim()) {
-      this.errorMessage = 'El tiempo de preparación es obligatorio';
-      return false;
-    }
-
-    const pasosValidos = this.recetaForm.pasos.filter((p) => p.trim() !== '');
-    if (pasosValidos.length === 0) {
-      this.errorMessage = 'Debes agregar al menos un paso';
-      return false;
-    }
-
-    const ingredientesValidos = this.recetaForm.ingredientes.filter((i) => i.trim() !== '');
-    if (ingredientesValidos.length === 0) {
-      this.errorMessage = 'Debes agregar al menos un ingrediente';
-      return false;
-    }
-
-    return true;
   }
 
   actualizarReceta(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
-    if (!this.validarFormulario()) {
-      setTimeout(() => {
-        this.errorMessage = '';
-      }, 4000);
+    if (!this.authService.isLogged()) {
+      this.errorMessage = 'Debes iniciar sesión para editar recetas.';
       return;
     }
 
-    const recetaActualizada = {
-      ...this.recetaForm,
-      pasos: this.recetaForm.pasos.filter((p) => p.trim() !== ''),
-      ingredientes: this.recetaForm.ingredientes.filter((i) => i.trim() !== ''),
+    if (!this.canEditReceta(this.recetaOriginal)) {
+      this.errorMessage = 'No tienes permisos para editar esta receta.';
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorMessage = 'Revisa los campos obligatorios del formulario';
+      return;
+    }
+
+    const formValue = this.form.value;
+    const pasos = String(formValue.pasos || '')
+      .split('\n')
+      .map((paso: string) => paso.trim())
+      .filter((paso: string) => paso !== '');
+
+    const recetaPayload = {
+      ...(this.recetaOriginal ?? {}),
+      ...formValue,
+      _id: this.recetaId,
+      tiempo_preparacion: `${formValue.tiempo_preparacion} min`,
+      pasos,
+      nutrientes_totales: {
+        calories: Number(formValue.nutrientes_totales),
+        protein_g: 0,
+        fat_g: 0,
+        carbs_g: 0,
+        fiber_g: 0,
+      },
     };
 
-    this.successMessage = 'Receta actualizada exitosamente';
-    setTimeout(() => {
-      this.router.navigate(['/recetas', this.recetaId]);
-    }, 2000);
+    this.recetasService.actualizarReceta(this.recetaId, recetaPayload).subscribe({
+      next: () => {
+        this.successMessage = 'Receta actualizada exitosamente';
+        setTimeout(() => {
+          this.router.navigate(['/recetas', this.recetaId]);
+        }, 1200);
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo actualizar la receta. Inténtalo de nuevo.';
+      },
+    });
   }
 
   cancelar(): void {

@@ -10,13 +10,17 @@
 .contenedorRecetas {
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   /*Esto lo he usado porque sino no conseguia que quedase centrado y que ocupase un espacio determinado*/
   /*Si no lo usaba quedaba centrado pero sin margenes*/
   column-gap: 50px;
   row-gap: 50px;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
+}
+
+.btn-crear {
+  cursor: pointer;
 }
 
 .filtros {
@@ -45,6 +49,70 @@
   background: white;
 }
 
+.dropdown-ingredientes {
+  border: 2px solid #c1ff72;
+  border-radius: 12px;
+  background: white;
+  overflow: hidden;
+}
+
+.dropdown-ingredientes summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 14px;
+  position: relative;
+  padding-right: 32px;
+}
+
+.dropdown-ingredientes summary::-webkit-details-marker {
+  display: none;
+}
+
+.dropdown-ingredientes summary::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+}
+
+.dropdown-ingredientes[open] summary::after {
+  content: '▴';
+}
+
+.dropdown-ingredientes:focus-within,
+.dropdown-ingredientes[open] {
+  border-color: #c1ff72;
+  box-shadow: 0 0 0 2px rgba(193, 255, 114, 0.25);
+}
+
+.dropdown-ingredientes__menu {
+  border-top: 1px solid #ececec;
+  max-height: 220px;
+  overflow-y: auto;
+  display: grid;
+}
+
+.dropdown-ingredientes__item {
+  border: none;
+  background: white;
+  color: black;
+  text-align: left;
+  padding: 10px 12px;
+  margin: 0;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-ingredientes__item:hover,
+.dropdown-ingredientes__item--active {
+  background: #f3ffd9;
+}
+
 .filtro select[multiple] {
   height: 120px;
 }
@@ -52,7 +120,8 @@
 .filtro select:focus,
 .filtro input:focus {
   outline: none;
-  border-color: black;
+  border-color: #c1ff72;
+  box-shadow: 0 0 0 2px rgba(193, 255, 114, 0.25);
 }
 
 .btn-borrar {
@@ -72,20 +141,21 @@
   color: black;
 }
 
-
 .cardReceta {
   width: 100%;
   padding: 10px;
   border-radius: 5%;
   text-align: center;
   border: 2px solid #c1ff72;
-  box-shadow: 0 2px 30px #c1ff72;
+  box-shadow: 0 2px 8px rgba(193, 255, 114, 0.15);
 }
 
 .cardReceta img {
   border-radius: 50%;
-  height: 10vw;
-  width: 10vw;
+  height: 160px;
+  width: 160px;
+  object-fit: cover;
+  margin-bottom: 12px;
 }
 .star {
   color: gold;
@@ -106,4 +176,55 @@ button {
 button:hover {
   background-color: #c1ff72;
   color: black;
+}
+
+.header-recetas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-nueva-receta {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-nueva-receta:hover {
+  background-color: #c1ff72;
+  color: black;
+}
+
+/* Estilos para botones de favoritos */
+.favorite-btn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.favorite-btn.favorite-active {
+  background-color: #dc3545;
+  color: white;
+  font-weight: 700;
+}
+
+.favorite-btn.favorite-active:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+.favorite-btn:hover:not(.favorite-active) {
+  background-color: #c1ff72;
 }

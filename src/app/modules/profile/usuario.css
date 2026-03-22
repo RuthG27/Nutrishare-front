@@ -825,6 +825,17 @@
   color: black;
 }
 
+.favorite-btn.favorite-active {
+  background-color: #dc3545;
+  color: white;
+  font-weight: 700;
+}
+
+.favorite-btn.favorite-active:hover {
+  background-color: #c82333;
+  color: white;
+}
+
 .edit-modal-overlay input:focus,
 .edit-modal-overlay select:focus,
 .edit-modal-overlay textarea:focus {

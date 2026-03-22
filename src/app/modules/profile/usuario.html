@@ -90,7 +90,7 @@
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('saved-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of savedRecipes; track recipe.id.timestamp) {
+            @for (recipe of savedRecipes; track trackRecipe($index, recipe)) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
@@ -111,12 +111,12 @@
 <section class="published-recipes">
     <div class="recipes-header">
         <h2 class="recipes-title">Recetas publicadas</h2>
-        <button class="upload-btn" (click)="navegarASubirReceta()">+ Subir nueva receta</button>
+        <button class="upload-btn" (click)="navegarASubirReceta()">+ Añadir receta</button>
     </div>
     <div class="recipes-wrapper">
         <button class="nav-btn prev-btn" (click)="scrollRecipes('published-recipes', 'left')">‹</button>
         <div class="recipes-container">
-            @for (recipe of publishedRecipes; track recipe.id.timestamp) {
+            @for (recipe of publishedRecipes; track trackRecipe($index, recipe)) {
             <div class="recipe-card">
                 <div class="recipe-image">
                     <img [src]="recipe.img" [alt]="recipe.nombre" />
@@ -129,7 +129,9 @@
                 </div>
                 <div class="recipe-actions">
                     <button class="recipe-btn small-btn" (click)="openRecipeModal(recipe)">Ver receta</button>
+                    @if (canManageRecipe(recipe)) {
                     <button class="recipe-btn small-btn" (click)="navigateToEditRecipe(recipe)">Editar</button>
+                    }
                 </div>
             </div>
             }

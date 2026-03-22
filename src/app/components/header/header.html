@@ -1,31 +1,49 @@
 <header class="main-header">
     <div class="navbar">
-        <div id="logo" class="brand">
+        <div id="logo" class="brand" (click)="toggleMenu()" style="cursor: pointer" title="Menu">
             <img src="/img/logo-fondo-blanco.png" alt="logo NutriShare" />
             <h2>NutriShare</h2>
         </div>
 
-        <nav class="nav-links">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-            <a routerLink="/sobre-nosotros" routerLinkActive="active">Sobre nosotros</a>
-            <a routerLink="/recetas" routerLinkActive="active">Recetas</a>
-            <a routerLink="/productos" routerLinkActive="active">Productos</a>
-        </nav>
+        <!-- Botón de menú desplegable (flecha) para móvil -->
+        <button class="mobile-menu-btn" (click)="toggleMenu()" aria-label="Abrir menú" [class.active]="isMenuOpen">
+            <!-- Flecha hacia abajo cuando está cerrado -->
+            <svg *ngIf="!isMenuOpen" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <!-- Flecha hacia arriba cuando está abierto -->
+            <svg *ngIf="isMenuOpen" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+        </button>
 
-        <div class="actions">
-            @if (isLogged) {
-            <a routerLink="/usuario" aria-label="Perfil" class="user-profile-link">
-                <img src="/img/usuario.png" alt="usuario" />
-                <span class="user-name">{{ userName }}</span>
-            </a>
-            } @else {
-            <a routerLink="/login" aria-label="Perfil">
-                <img src="/img/usuario.png" alt="usuario" />
-            </a>
-            }
-            <a class="cart-link" routerLink="/carrito" aria-label="carrito">
-                <img src="/img/carrito-de-compras.png" alt="carrito" />
-            </a>
+        <div class="navbar-menu" [class.open]="isMenuOpen">
+            <nav class="nav-links">
+                <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                    (click)="isMenuOpen = false">Home</a>
+                <a routerLink="/sobre-nosotros" routerLinkActive="active" (click)="isMenuOpen = false">Sobre
+                    nosotros</a>
+                <a routerLink="/recetas" routerLinkActive="active" (click)="isMenuOpen = false">Recetas</a>
+                <a routerLink="/productos" routerLinkActive="active" (click)="isMenuOpen = false">Productos</a>
+            </nav>
+
+            <div class="actions">
+                @if (isLogged) {
+                <a routerLink="/usuario" aria-label="Perfil" class="user-profile-link" (click)="isMenuOpen = false">
+                    <img src="/img/usuario.png" alt="usuario" />
+                    <span class="user-name">{{ userName }}</span>
+                </a>
+                } @else {
+                <a routerLink="/login" aria-label="Perfil" (click)="isMenuOpen = false">
+                    <img src="/img/usuario.png" alt="usuario" />
+                </a>
+                }
+                <a class="cart-link" routerLink="/carrito" aria-label="carrito" (click)="isMenuOpen = false">
+                    <img src="/img/carrito-de-compras.png" alt="carrito" />
+                </a>
+            </div>
         </div>
     </div>
 </header>

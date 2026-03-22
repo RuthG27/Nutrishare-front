@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthRestService } from '../../features/auth/services/auth-rest.service';
 import { UserRestService } from '../../features/user/services/user-rest.service';
 import { Receta, RecetaService } from '../../features/receta/receta.service';
-import { Productos } from '../../services/productos';
+import { ProductosService } from '../../services/productos';
 import { Router } from '@angular/router';
 import { RecipeDetailModalComponent } from '../../components/modals/recipe-detail-modal/recipe-detail-modal';
 
@@ -16,6 +16,7 @@ import { RecipeDetailModalComponent } from '../../components/modals/recipe-detai
 })
 export class UsuarioComponent implements OnInit {
   userData: any = null;
+  isLogged = false;
   isEditing = false;
   errorMessage = '';
   successMessage = '';
@@ -27,6 +28,8 @@ export class UsuarioComponent implements OnInit {
 
   savedRecipes: Receta[] = [];
   publishedRecipes: Receta[] = [];
+  favoritosIds = new Set<string>();
+  allProducts: any[] = [];
 
   selectedRecipe: Receta | null = null;
   isModalVisible: boolean = false;
@@ -35,28 +38,197 @@ export class UsuarioComponent implements OnInit {
     private authRestService: AuthRestService,
     private userRestService: UserRestService,
     private recetaService: RecetaService,
-    private productosService: Productos,
+    private productosService: ProductosService,
     private router: Router,
   ) {}
 
-  ngOnInit() {
-    this.userData = this.authRestService.getUserData();
-    this.loadRecipes();
+  private normalizeId(value: any): string | null {
+    if (!value) return null;
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'object') {
+      if (typeof value._id === 'string') return value._id;
+      if (typeof value.id === 'string') return value.id;
+      if (typeof value.timestamp === 'number') return String(value.timestamp);
+    }
+    return null;
   }
 
-  loadRecipes() {
-    // Por ahora usamos datos mock hasta conectar con el back-end
-    // TODO: Implementar llamada real al back-end cuando esté listo
-    this.recetaService.obtenerTodas().subscribe({
-      next: (recetas) => {
-        this.savedRecipes = recetas.slice(0, 8);
-        this.publishedRecipes = recetas.slice(8, 12);
+  private getCurrentUserId(): string | null {
+    const userData = this.authRestService.getUserData();
+    const fromUserData = this.normalizeId(userData?._id ?? userData?.id);
+    if (fromUserData) return fromUserData;
+    return this.normalizeId(this.authRestService.getUserIdFromToken());
+  }
+
+  private getRecipeOwnerId(recipe: any): string | null {
+    return this.normalizeId(
+      recipe?.userId ??
+        recipe?.usuarioId ??
+        recipe?.authorId ??
+        recipe?.ownerId ??
+        recipe?.user?._id ??
+        recipe?.user?.id ??
+        recipe?.usuario?._id ??
+        recipe?.usuario?.id,
+    );
+  }
+
+  canManageRecipe(recipe: Receta): boolean {
+    if (!this.authRestService.isLogged()) {
+      return false;
+    }
+
+    const currentUserId = this.getCurrentUserId();
+    const ownerId = this.getRecipeOwnerId(recipe);
+
+    return !!currentUserId && !!ownerId && currentUserId === ownerId;
+  }
+
+  ngOnInit() {
+    this.isLogged = this.authRestService.isLogged();
+    this.userData = this.authRestService.getUserData();
+
+    if (this.isLogged) {
+      this.loadPublishedRecipes();
+      this.loadSavedRecipes();
+    }
+
+    this.authRestService.loginEmitter.subscribe((logged: boolean) => {
+      this.isLogged = logged;
+      if (logged) {
+        this.userData = this.authRestService.getUserData();
+        this.loadPublishedRecipes();
+        this.loadSavedRecipes();
+        return;
+      }
+
+      this.publishedRecipes = [];
+      this.savedRecipes = [];
+      this.favoritosIds.clear();
+    });
+
+    this.productosService.getProductos().subscribe((productos) => {
+      this.allProducts = productos;
+    });
+  }
+
+  private getRecipeId(recipe: any): string | null {
+    return recipe?._id ?? recipe?.id?.timestamp?.toString?.() ?? null;
+  }
+
+  private getRecetaFromFavorito(item: any): Receta | null {
+    const receta = item?.receta ?? item?.recipe ?? item;
+    return receta || null;
+  }
+
+  loadSavedRecipes() {
+    if (!this.isLogged) {
+      this.savedRecipes = [];
+      this.favoritosIds.clear();
+      return;
+    }
+
+    this.recetaService.getFavoritos().subscribe({
+      next: (response: any) => {
+        const favoritos = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : Array.isArray(response?.body?.data)
+              ? response.body.data
+              : [];
+
+        const recetaIds = favoritos
+          .map((favorito: any) => favorito.recetaId)
+          .filter((id: string | undefined): id is string => !!id);
+
+        if (recetaIds.length === 0) {
+          this.savedRecipes = [];
+          this.favoritosIds.clear();
+          return;
+        }
+
+        this.recetaService.obtenerTodas().subscribe({
+          next: (todasLasRecetas: any[]) => {
+            const recetasFavoritas = todasLasRecetas.filter((receta: any) =>
+              recetaIds.includes(receta._id),
+            );
+
+            this.savedRecipes = recetasFavoritas;
+            this.favoritosIds = new Set(recetaIds);
+          },
+          error: (error) => {
+            console.error('Error obteniendo todas las recetas:', error);
+            this.savedRecipes = [];
+            this.favoritosIds.clear();
+          },
+        });
+      },
+      error: (error) => {
+        console.error('Error cargando favoritas:', error);
+        this.savedRecipes = [];
+        this.favoritosIds.clear();
+      },
+    });
+  }
+
+  loadPublishedRecipes() {
+    if (!this.isLogged) {
+      this.publishedRecipes = [];
+      return;
+    }
+
+    this.recetaService.getMisRecetas().subscribe({
+      next: (response: any) => {
+        const recetas = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : Array.isArray(response?.body?.data)
+              ? response.body.data
+              : [];
+
+        this.publishedRecipes = recetas;
       },
       error: (error) => {
         console.error('Error cargando recetas:', error);
-        // Fallback a datos vacíos
-        this.savedRecipes = [];
         this.publishedRecipes = [];
+      },
+    });
+  }
+
+  trackRecipe(index: number, recipe: any): string | number {
+    return recipe?.id?.timestamp ?? recipe?._id ?? index;
+  }
+
+  esFavorita(recipe: Receta): boolean {
+    const id = this.getRecipeId(recipe);
+    return !!id && this.favoritosIds.has(id);
+  }
+
+  toggleFavorita(recipe: Receta): void {
+    const recipeId = this.getRecipeId(recipe);
+    if (!recipeId) {
+      return;
+    }
+
+    if (this.favoritosIds.has(recipeId)) {
+      this.recetaService.eliminarFavorito(recipeId).subscribe({
+        next: () => {
+          this.favoritosIds.delete(recipeId);
+          this.savedRecipes = this.savedRecipes.filter(
+            (saved) => this.getRecipeId(saved) !== recipeId,
+          );
+        },
+      });
+      return;
+    }
+
+    this.recetaService.agregarFavorito(recipeId).subscribe({
+      next: () => {
+        this.favoritosIds.add(recipeId);
+        this.loadSavedRecipes();
       },
     });
   }
@@ -218,19 +390,28 @@ export class UsuarioComponent implements OnInit {
   }
 
   getIngredientName(ingredientId: string): string {
-    const productos = this.productosService.getProductos();
-    const producto = productos.find((p: any) => p._id === ingredientId);
+    const producto = this.allProducts.find((p: any) => p._id === ingredientId);
     return producto ? producto.nombre : ingredientId;
   }
 
+  private getRecipeNavigationId(recipe: Receta): string | null {
+    const anyRecipe = recipe as any;
+    return anyRecipe?._id ?? anyRecipe?.id?.timestamp?.toString() ?? null;
+  }
+
   navigateToRecipeDetail(recipe: Receta) {
-    // TODO: Implementar navegación a detalle de receta con id correcto
-    this.router.navigate(['/recetas', '74f1a0000000000000000101']);
+    const recipeId = this.getRecipeNavigationId(recipe);
+    if (!recipeId) return;
+    this.router.navigate(['/recetas', recipeId]);
   }
 
   navigateToEditRecipe(recipe: Receta) {
-    // TODO: Implementar navegación a edición de receta con id correcto
-    this.router.navigate(['/recetas/editar', '74f1a0000000000000000101']);
+    if (!this.authRestService.isLogged()) return;
+    if (!this.canManageRecipe(recipe)) return;
+
+    const recipeId = this.getRecipeNavigationId(recipe);
+    if (!recipeId) return;
+    this.router.navigate(['/recetas/editar', recipeId]);
   }
 
   openRecipeModal(recipe: Receta) {
