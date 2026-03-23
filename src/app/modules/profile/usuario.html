@@ -88,8 +88,13 @@
         <h2 class="recipes-title">Recetas guardadas</h2>
     </div>
     <div class="recipes-wrapper">
+        @if (savedRecipes.length) {
         <button class="nav-btn prev-btn" (click)="scrollRecipes('saved-recipes', 'left')">‹</button>
+        }
         <div class="recipes-container">
+            @if (!savedRecipes.length) {
+            <p class="empty-recipes-message">Aún no tienes recetas favoritas.</p>
+            }
             @for (recipe of savedRecipes; track trackRecipe($index, recipe)) {
             <div class="recipe-card">
                 <div class="recipe-image">
@@ -105,7 +110,9 @@
             </div>
             }
         </div>
+        @if (savedRecipes.length) {
         <button class="nav-btn next-btn" (click)="scrollRecipes('saved-recipes', 'right')">›</button>
+        }
     </div>
 </section>
 <section class="published-recipes">
@@ -114,8 +121,13 @@
         <button class="upload-btn" (click)="navegarASubirReceta()">+ Añadir receta</button>
     </div>
     <div class="recipes-wrapper">
+        @if (publishedRecipes.length) {
         <button class="nav-btn prev-btn" (click)="scrollRecipes('published-recipes', 'left')">‹</button>
+        }
         <div class="recipes-container">
+            @if (!publishedRecipes.length) {
+            <p class="empty-recipes-message">Aún no has publicado recetas.</p>
+            }
             @for (recipe of publishedRecipes; track trackRecipe($index, recipe)) {
             <div class="recipe-card">
                 <div class="recipe-image">
@@ -136,7 +148,9 @@
             </div>
             }
         </div>
+        @if (publishedRecipes.length) {
         <button class="nav-btn next-btn" (click)="scrollRecipes('published-recipes', 'right')">›</button>
+        }
     </div>
 </section>
 

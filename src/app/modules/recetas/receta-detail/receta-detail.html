@@ -14,6 +14,20 @@
     <div>
       <h1>{{ recetaSeleccionada.nombre }}</h1>
 
+      <div class="foto-receta foto-receta-mobile">
+        <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
+        <button type="button" class="download-btn image-download-btn" (click)="downloadPdf()"
+          [disabled]="!canDownload() || isDownloading"
+          [title]="canDownload() ? 'Descargar receta en PDF' : 'Datos insuficientes para descargar'">
+          @if (isDownloading) {
+          <span class="spinner-icon">⟳</span>
+          <span class="download-text">Descargando...</span>
+          } @else {
+          <span class="download-text">Descargar PDF</span>
+          }
+        </button>
+      </div>
+
       <div class="ficha-receta">
         <p><strong>Cocina:</strong> {{ recetaSeleccionada.cocina }}</p>
         <p><strong>Categoría:</strong> {{ recetaSeleccionada.categoria }}</p>
@@ -40,34 +54,45 @@
         }
       </ol>
 
-      <button type="button" (click)="volverAtras()">
-        Volver
-      </button>
-      @if (isLogged) {
-      <button type="button" (click)="toggleFavorita()">
-        {{ esFavorita(recetaSeleccionada._id) ? 'Quitar favorita' : 'Favorita' }}
-      </button>
-      }
-      <!-- Botones crud: actualizar + eliminar -->
+      <div class="action-buttons">
+        <button type="button" (click)="volverAtras()">
+          Volver
+        </button>
+        @if (isLogged) {
+        <button type="button" (click)="toggleFavorita()">
+          {{ esFavorita(recetaSeleccionada._id) ? 'Quitar favorita' : 'Favorita' }}
+        </button>
+        }
+        <!-- Botones crud: actualizar + eliminar -->
 
-      @if (canManageSelectedReceta()) {
-      <button (click)="mostrarFormulario = true" class="button-editar">Editar</button>
-      }
+        @if (canManageSelectedReceta()) {
+        <button (click)="mostrarFormulario = true" class="button-editar">Editar</button>
+        }
+        @if (canManageSelectedReceta()) {
+        <button (click)="eliminar(recetaSeleccionada._id)" type="button" class="button-eliminar">Eliminar</button>
+        }
+      </div>
 
       @if (mostrarFormulario && canManageSelectedReceta()) {
       <app-form-recetas [receta]="recetaSeleccionada" (cerrarFormulario)="mostrarFormulario = false">
       </app-form-recetas>
       }
-
-      @if (canManageSelectedReceta()) {
-      <button (click)="eliminar(recetaSeleccionada._id)" type="button" class="button-eliminar">Eliminar</button>
-      }
     </div>
 
-    <!-- IMAGEN DE LA RECETA -->
-    <div class="foto-receta">
+    <div class="foto-receta foto-receta-desktop">
       <img [src]="recetaSeleccionada.img" [alt]="recetaSeleccionada.nombre" />
+      <button type="button" class="download-btn image-download-btn" (click)="downloadPdf()"
+        [disabled]="!canDownload() || isDownloading"
+        [title]="canDownload() ? 'Descargar receta en PDF' : 'Datos insuficientes para descargar'">
+        @if (isDownloading) {
+        <span class="spinner-icon">⟳</span>
+        <span class="download-text">Descargando...</span>
+        } @else {
+        <span class="download-text">Descargar PDF</span>
+        }
+      </button>
     </div>
+
   </div>
   } @else {
   <div class="no-encontrada">

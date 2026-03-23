@@ -6,6 +6,7 @@ import { Receta, RecetasService } from '../../../services/recetas';
 import { Producto, ProductosService } from '../../../services/productos';
 import { FormRecetasComponent } from '../../../components/form-recetas/form-recetas';
 import { AuthRestService } from '../../../features/auth/services/auth-rest.service';
+import { RecetaPdfService } from '../../../features/receta/receta-pdf.service';
 
 @Component({
   selector: 'app-receta-detail',
@@ -19,6 +20,7 @@ export class RecetaDetail implements OnInit {
   ingredientesSeleccionados: Producto[] = [];
   successMessage = '';
   errorMessage = '';
+  isDownloading = false;
 
   isLogged: boolean = false;
   favoritosIds = new Set<string>();
@@ -29,6 +31,7 @@ export class RecetaDetail implements OnInit {
     private recetasService: RecetasService,
     private productosService: ProductosService,
     private authService: AuthRestService,
+    private recetaPdfService: RecetaPdfService,
   ) {}
 
   private normalizeId(value: any): string | null {
@@ -186,6 +189,28 @@ export class RecetaDetail implements OnInit {
 
   volverAtras() {
     this.router.navigate(['/recetas']);
+  }
+
+  async downloadPdf(): Promise<void> {
+    if (!this.recetaSeleccionada || this.isDownloading) return;
+
+    try {
+      this.isDownloading = true;
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      await this.recetaPdfService.downloadRecipePdf(this.recetaSeleccionada as any);
+    } catch (error) {
+      console.error('Error descargando PDF:', error);
+    } finally {
+      this.isDownloading = false;
+    }
+  }
+
+  canDownload(): boolean {
+    return this.recetaSeleccionada
+      ? this.recetaPdfService.canGeneratePdf(this.recetaSeleccionada as any)
+      : false;
   }
 
   eliminar(id: string): void {
