@@ -13,40 +13,57 @@
     <div class="error-message">{{ errorMessage }}</div>
     }
 
-    <form (ngSubmit)="guardarReceta()" class="receta-form">
+    <form class="receta-form" [formGroup]="form" (ngSubmit)="guardarReceta()">
       <div class="form-section">
         <h2>Información Básica</h2>
 
         <div class="form-group">
           <label for="nombre">Nombre de la receta *</label>
-          <input
-            id="nombre"
-            type="text"
-            [(ngModel)]="recetaForm.nombre"
-            name="nombre"
-            placeholder="Ej: Ensalada César"
-            required
-          />
+          <input id="nombre" type="text" formControlName="nombre" placeholder="Ej: Ensalada César" required />
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="cocina">Tipo de cocina *</label>
-            <select id="cocina" [(ngModel)]="recetaForm.cocina" name="cocina" required>
+            <select id="cocina" formControlName="cocina" required>
               <option value="">Selecciona...</option>
-              @for (cocina of cocinas; track cocina) {
-              <option [value]="cocina">{{ cocina }}</option>
-              }
+              <option value="Griega">Griega</option>
+              <option value="Italiana">Italiana</option>
+              <option value="Mediterránea">Mediterránea</option>
+              <option value="Francesa">Francesa</option>
+              <option value="Española">Española</option>
+              <option value="Magrebí">Magrebí</option>
+              <option value="Libanesa">Libanesa</option>
+              <option value="Marroquí">Marroquí</option>
+              <option value="Vasca">Vasca</option>
+              <option value="Catalana">Catalana</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="categoria">Categoría *</label>
-            <select id="categoria" [(ngModel)]="recetaForm.categoria" name="categoria" required>
+            <select id="categoria" formControlName="categoria" required>
               <option value="">Selecciona...</option>
-              @for (categoria of categorias; track categoria) {
-              <option [value]="categoria">{{ categoria }}</option>
-              }
+              <option value="Ensalada">Ensalada</option>
+              <option value="Aperitivo">Aperitivo</option>
+              <option value="Pasta">Pasta</option>
+              <option value="Plato único">Plato único</option>
+              <option value="Salsa / snack">Salsa / snack</option>
+              <option value="Guarnición">Guarnición</option>
+              <option value="Sopa fría">Sopa fría</option>
+              <option value="Sopa caliente">Sopa caliente</option>
+              <option value="Cereal">Cereal</option>
+              <option value="Segundo">Segundo</option>
+              <option value="Arroz">Arroz</option>
+              <option value="Huevos">Huevos</option>
+              <option value="Verdura salteada">Verdura salteada</option>
+              <option value="Dip">Dip</option>
+              <option value="Legumbre">Legumbre</option>
+              <option value="Pescado">Pescado</option>
+              <option value="Carne">Carne</option>
+              <option value="Verdura rellena">Verdura rellena</option>
+              <option value="Desayuno">Desayuno</option>
+              <option value="Horno">Horno</option>
             </select>
           </div>
         </div>
@@ -54,95 +71,67 @@
         <div class="form-row">
           <div class="form-group">
             <label for="dificultad">Dificultad *</label>
-            <select id="dificultad" [(ngModel)]="recetaForm.dificultad" name="dificultad" required>
+            <select id="dificultad" formControlName="dificultad" required>
               <option value="">Selecciona...</option>
-              @for (dificultad of dificultades; track dificultad) {
-              <option [value]="dificultad">{{ dificultad }}</option>
-              }
+              <option value="Fácil">Fácil</option>
+              <option value="Media">Media</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="tiempo">Tiempo de preparación *</label>
-            <input
-              id="tiempo"
-              type="text"
-              [(ngModel)]="recetaForm.tiempo_preparacion"
-              name="tiempo"
-              placeholder="Ej: 30 min"
-              required
-            />
+            <input id="tiempo" type="number" formControlName="tiempo_preparacion" placeholder="Ej: 30" required />
           </div>
+        </div>
+        <div class="form-group">
+          <label for="nutrientes">Nutrientes totales</label>
+          <input id="nutrientes" type="number" formControlName="nutrientes_totales" placeholder="Ej: 250" />
         </div>
 
         <div class="form-group">
+          <label for="puntuacion">Puntuación (0–5)</label>
+          <input id="puntuacion" type="number" formControlName="puntuacion" min="0" max="5" step="0.1"
+            placeholder="Ej: 4.5" />
+        </div>
+        <div class="form-group">
           <label for="img">URL de la imagen</label>
-          <input
-            id="img"
-            type="url"
-            [(ngModel)]="recetaForm.img"
-            name="img"
-            placeholder="https://ejemplo.com/imagen.jpg"
-          />
+          <input id="img" type="url" formControlName="img" placeholder="https://ejemplo.com/imagen.jpg" />
+          <div class="image-preview">
+            <img [src]="form.value.img || 'https://imagenes.nutri-share.com/recetas/plato_saludable_generico.png'"
+              alt="Vista previa" />
+          </div>
         </div>
-      </div>
-
-      <div class="form-section">
-        <h2>Ingredientes</h2>
-        <p class="section-description">Agrega los ingredientes necesarios para tu receta</p>
-
-        @for (ingrediente of recetaForm.ingredientes; track $index) {
-        <div class="dynamic-field">
-          <input
-            type="text"
-            [(ngModel)]="recetaForm.ingredientes[$index]"
-            [name]="'ingrediente-' + $index"
-            placeholder="Ej: 200g de tomate"
-          />
-          @if (recetaForm.ingredientes.length > 1) {
-          <button type="button" class="btn-remove" (click)="eliminarIngrediente($index)">
-            ✕
-          </button>
-          }
-        </div>
-        }
-
-        <button type="button" class="btn-add" (click)="agregarIngrediente()">
-          + Agregar ingrediente
-        </button>
       </div>
 
       <div class="form-section">
         <h2>Pasos de Preparación</h2>
         <p class="section-description">Describe paso a paso cómo preparar la receta</p>
 
-        @for (paso of recetaForm.pasos; track $index) {
-        <div class="dynamic-field">
-          <div class="paso-number">{{ $index + 1 }}</div>
-          <textarea
-            [(ngModel)]="recetaForm.pasos[$index]"
-            [name]="'paso-' + $index"
-            placeholder="Describe este paso..."
-            rows="3"
-          ></textarea>
-          @if (recetaForm.pasos.length > 1) {
-          <button type="button" class="btn-remove" (click)="eliminarPaso($index)">
-            ✕
-          </button>
-          }
+        <div class="form-group">
+          <label for="pasos">Pasos</label>
+          <textarea id="pasos" formControlName="pasos" placeholder="Describe paso a paso cómo preparar la receta..."
+            rows="5"></textarea>
         </div>
-        }
+      </div>
 
-        <button type="button" class="btn-add" (click)="agregarPaso()">
-          + Agregar paso
-        </button>
+      <div class="form-section">
+        <h2>Ingredientes</h2>
+        <p class="section-description">Selecciona los ingredientes necesarios para tu receta</p>
+
+        <div class="lista-ingredientes">
+          <div *ngFor="let producto of productos" class="ingrediente-item">
+            <input type="checkbox" [value]="producto._id" (change)="onIngredienteChange($event)"
+              [checked]="form.value.ingredientes?.includes(producto._id)" />
+            <span>{{ producto.nombre }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="form-actions">
         <button type="button" class="btn-cancel" (click)="cancelar()">
           Cancelar
         </button>
-        <button type="submit" class="btn-submit">
+        <button type="submit" class="btn-submit" [disabled]="form.invalid">
           Crear Receta
         </button>
       </div>

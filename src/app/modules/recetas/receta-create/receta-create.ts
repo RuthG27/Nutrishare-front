@@ -1,26 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Producto, ProductosService } from '../../../services/productos';
+import { RecetasService } from '../../../services/recetas';
+import { AuthRestService } from '../../../features/auth/services/auth-rest.service';
 
 @Component({
   selector: 'app-receta-create',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './receta-create.html',
   styleUrl: './receta-create.css',
 })
-export class RecetaCreate {
-  recetaForm = {
-    nombre: '',
-    cocina: '',
-    categoria: '',
-    dificultad: '',
-    tiempo_preparacion: '',
-    img: '',
-    pasos: [''],
-    ingredientes: [''],
-  };
+export class RecetaCreate implements OnInit {
+  form!: FormGroup;
+  productos: Producto[] = [];
 
   errorMessage = '';
   successMessage = '';
@@ -39,90 +34,98 @@ export class RecetaCreate {
   categorias = ['Ensalada', 'Sopa', 'Principal', 'Postre', 'Aperitivo', 'Desayuno', 'Snack'];
   dificultades = ['Fácil', 'Media', 'Difícil'];
 
-  constructor(private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private recetasService: RecetasService,
+    private productosService: ProductosService,
+    private authService: AuthRestService,
+  ) {}
 
-  agregarPaso(): void {
-    this.recetaForm.pasos.push('');
+  ngOnInit(): void {
+    if (!this.authService.isLogged()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.form = this.fb.group({
+      nombre: ['', Validators.required],
+      cocina: ['', Validators.required],
+      categoria: ['', Validators.required],
+      dificultad: ['', Validators.required],
+      tiempo_preparacion: [null, [Validators.required, Validators.min(1)]],
+      pasos: ['', Validators.required],
+      ingredientes: [[]],
+      nutrientes_totales: [0, Validators.required],
+      img: ['https://imagenes.nutri-share.com/recetas/plato_saludable_generico.png'],
+      puntuacion: [0, [Validators.required, Validators.min(0), Validators.max(5)]],
+    });
+
+    this.productosService.getProductos().subscribe((productos) => {
+      this.productos = productos;
+    });
   }
 
-  eliminarPaso(index: number): void {
-    if (this.recetaForm.pasos.length > 1) {
-      this.recetaForm.pasos.splice(index, 1);
+  onIngredienteChange(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    const ingredientes: string[] = this.form.value.ingredientes || [];
+
+    if (checkbox.checked) {
+      this.form.patchValue({
+        ingredientes: [...ingredientes, checkbox.value],
+      });
+    } else {
+      this.form.patchValue({
+        ingredientes: ingredientes.filter((id) => id !== checkbox.value),
+      });
     }
-  }
-
-  agregarIngrediente(): void {
-    this.recetaForm.ingredientes.push('');
-  }
-
-  eliminarIngrediente(index: number): void {
-    if (this.recetaForm.ingredientes.length > 1) {
-      this.recetaForm.ingredientes.splice(index, 1);
-    }
-  }
-
-  validarFormulario(): boolean {
-    if (!this.recetaForm.nombre.trim()) {
-      this.errorMessage = 'El nombre de la receta es obligatorio';
-      return false;
-    }
-
-    if (!this.recetaForm.cocina) {
-      this.errorMessage = 'Selecciona un tipo de cocina';
-      return false;
-    }
-
-    if (!this.recetaForm.categoria) {
-      this.errorMessage = 'Selecciona una categoría';
-      return false;
-    }
-
-    if (!this.recetaForm.dificultad) {
-      this.errorMessage = 'Selecciona una dificultad';
-      return false;
-    }
-
-    if (!this.recetaForm.tiempo_preparacion.trim()) {
-      this.errorMessage = 'El tiempo de preparación es obligatorio';
-      return false;
-    }
-
-    const pasosValidos = this.recetaForm.pasos.filter((p) => p.trim() !== '');
-    if (pasosValidos.length === 0) {
-      this.errorMessage = 'Debes agregar al menos un paso';
-      return false;
-    }
-
-    const ingredientesValidos = this.recetaForm.ingredientes.filter((i) => i.trim() !== '');
-    if (ingredientesValidos.length === 0) {
-      this.errorMessage = 'Debes agregar al menos un ingrediente';
-      return false;
-    }
-
-    return true;
   }
 
   guardarReceta(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
-    if (!this.validarFormulario()) {
-      setTimeout(() => {
-        this.errorMessage = '';
-      }, 4000);
+    if (!this.authService.isLogged()) {
+      this.errorMessage = 'Debes iniciar sesión para crear recetas.';
       return;
     }
 
-    const recetaLimpia = {
-      ...this.recetaForm,
-      pasos: this.recetaForm.pasos.filter((p) => p.trim() !== ''),
-      ingredientes: this.recetaForm.ingredientes.filter((i) => i.trim() !== ''),
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorMessage = 'Revisa los campos obligatorios del formulario';
+      return;
+    }
+
+    const formValue = this.form.value;
+    const pasos = String(formValue.pasos || '')
+      .split('\n')
+      .map((paso: string) => paso.trim())
+      .filter((paso: string) => paso !== '');
+
+    const recetaPayload = {
+      ...formValue,
+      tiempo_preparacion: `${formValue.tiempo_preparacion} min`,
+      pasos,
+      nutrientes_totales: {
+        calories: Number(formValue.nutrientes_totales),
+        protein_g: 0,
+        fat_g: 0,
+        carbs_g: 0,
+        fiber_g: 0,
+      },
     };
 
-    this.successMessage = 'Receta creada exitosamente';
-    setTimeout(() => {
-      this.router.navigate(['/recetas']);
-    }, 2000);
+    this.recetasService.crearReceta(recetaPayload).subscribe({
+      next: () => {
+        this.successMessage = 'Receta creada exitosamente';
+        setTimeout(() => {
+          this.router.navigate(['/recetas']);
+        }, 1200);
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo crear la receta. Inténtalo de nuevo.';
+      },
+    });
   }
 
   cancelar(): void {

@@ -1,4 +1,4 @@
-footer{
+footer {
     background-color: black;
     color: #ffffffff;
     text-align: center;
@@ -6,21 +6,52 @@ footer{
     margin-top: 20px;
 }
 
-h2{
+h2 {
     font-size: 3rem;
 }
 
-div{
+div {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 100px;
     margin-top: 50px;
     margin-bottom: 50px;
 }
-div p{
+
+div p {
     font-weight: normal;
+    margin-top: 0;
 }
-p{
+
+p {
     font-weight: 100;
-    margin-top:30px;
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    div {
+        gap: 40px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    div {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    footer {
+        padding: 20px 15px;
+    }
 }

@@ -1,58 +1,79 @@
 <div id="recetas">
 
-    <h1>Nuevas recetas:</h1>
+    <div class="header-recetas"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Nuevas recetas:</h1>
+        @if (isLogged) {
+        <button (click)="abrirFormularioCrear()" class="btn-crear"> ➕ Añadir receta</button>
+        }
+    </div>
+
+    <!-- Mostrar formulario si se pulsa el botón -->
+    @if (mostrarFormulario) {
+    <app-form-recetas (cerrarFormulario)="cerrarFormulario()">
+    </app-form-recetas>
+    }
 
     <div class="filtros">
         <div class="filtro">
             <label for="cocina">Tipo de cocina:</label>
 
             <!-- cada vez que se haga un cambio se aplica la funcion aplicarFiltros() -->
-            <select name="" id="" [(ngModel)]="filtros.cocina" (change) = "aplicarFiltros()" >
+            <select name="" id="" [(ngModel)]="filtros.cocina" (change)="aplicarFiltros()">
                 <!-- muestra las opciones de cocina -->
                 @for (opcionCoc of opcionesCocina; track opcionCoc){
-                    <option value="{{opcionCoc}}">{{opcionCoc}}</option>
+                <option value="{{opcionCoc}}">{{opcionCoc}}</option>
                 }
             </select>
         </div>
 
         <div class="filtro">
             <label for="categoria">Categoría:</label>
-            <select name="" id="" [(ngModel)]="filtros.categoria" (change) = "aplicarFiltros()" >
+            <select name="" id="" [(ngModel)]="filtros.categoria" (change)="aplicarFiltros()">
                 @for (opcionCat of opcionesCategoria; track opcionCat){
-                    <option value="{{opcionCat}}">{{opcionCat}}</option>
+                <option value="{{opcionCat}}">{{opcionCat}}</option>
                 }
             </select>
         </div>
 
         <div class="filtro">
             <label for="ingredientes">Ingredientes</label>
-            <select multiple [(ngModel)]="filtros.ingrediente" (change)="aplicarFiltros()">
-                @for (prod of opcionesIngredientesProductos; track prod._id) {
-                    <option [ngValue]="prod._id">
-                    {{ prod.nombre }}
-                    </option>
-                }
-            </select>
+            <details #ingredientesDropdown class="dropdown-ingredientes">
+                <summary>{{ getNombreIngredienteSeleccionado() }}</summary>
+                <div class="dropdown-ingredientes__menu">
+                    <button type="button" class="dropdown-ingredientes__item"
+                        (click)="filtros.ingrediente = ''; aplicarFiltros(); ingredientesDropdown.open = false">
+                        Todos los ingredientes
+                    </button>
+                    @for (prod of opcionesIngredientesProductos; track prod._id) {
+                    <button type="button" class="dropdown-ingredientes__item"
+                        [class.dropdown-ingredientes__item--active]="filtros.ingrediente === prod._id"
+                        (click)="filtros.ingrediente = prod._id; aplicarFiltros(); ingredientesDropdown.open = false">
+                        {{ prod.nombre }}
+                    </button>
+                    }
+                </div>
+            </details>
         </div>
-
 
         <div class="filtro">
             <label for="nombre">Nombre de la receta: </label>
-            <input type = "text" [(ngModel)]="filtros.nombre" (input) = "aplicarFiltros()"/>
+            <input type="text" [(ngModel)]="filtros.nombre" (input)="aplicarFiltros()" />
         </div>
 
         <div class="filtro">
             <label for="dificultad">Dificultad:</label>
-            <select name="" id="" [(ngModel)]="filtros.dificultad"(change) = "aplicarFiltros()" >
+            <select name="" id="" [(ngModel)]="filtros.dificultad" (change)="aplicarFiltros()">
                 @for (opcionDif of opcionesDificultad; track opcionDif){
-                    <option value="{{opcionDif}}">{{opcionDif}}</option>
+                <option value="{{opcionDif}}">{{opcionDif}}</option>
                 }
             </select>
         </div>
 
         <div class="filtro">
             <label for="tiempo_preparacion">Tiempo de preparación: </label>
-            <input type = "number" min = "1" max= "500" [(ngModel)]="filtros.tiempo_preparacion" (input) = "aplicarFiltros()"/>
+            <input type="number" min="1" max="500" [(ngModel)]="filtros.tiempo_preparacion"
+                (input)="aplicarFiltros()" />
         </div>
         <button class="btn-borrar" (click)="borrarFiltros()">Borrar filtros</button>
 
@@ -69,17 +90,21 @@
             <h3>{{receta.nombre}}</h3>
             <p><strong>{{receta.puntuacion}}</strong> <i class="fas fa-star star"></i></p>
             <button [routerLink]="['/recetas', receta._id]">Ver receta</button>
-            <button (click)="guardarFavorita(receta)">Favorita</button>
+            @if (isLogged) {
+            <button class="favorite-btn" [class.favorite-active]="esFavorita(receta._id)"
+                (click)="guardarFavorita(receta)">{{ esFavorita(receta._id) ? 'Quitar favorita' : 'Favorita'
+                }}</button>
+            }
 
         </div>
         }
     </div>
 
-<!-- Si no hay ninguna receta con estos filtros. -->
-} @else {
-        <div class="noExiste">
-            <p>No existe aún una receta con estos filtros.</p>
-        </div>
-}
+    <!-- Si no hay ninguna receta con estos filtros. -->
+    } @else {
+    <div class="noExiste">
+        <p>No existe aún una receta con estos filtros.</p>
+    </div>
+    }
 
 </div>
