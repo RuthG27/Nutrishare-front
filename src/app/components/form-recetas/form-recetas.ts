@@ -100,7 +100,13 @@ export class FormRecetasComponent implements OnInit {
     };
 
     if (this.esEdicion && this.receta?._id) {
-      this.recetasService.actualizarReceta(this.receta._id, datos).subscribe(() => {
+      const datosEdicion: any = {
+        ...(this.receta as any),
+        ...datos,
+        _id: this.receta._id,
+      };
+
+      this.recetasService.actualizarReceta(this.receta._id, datosEdicion).subscribe(() => {
         alert('Receta actualizada');
         this.cerrar();
       });
