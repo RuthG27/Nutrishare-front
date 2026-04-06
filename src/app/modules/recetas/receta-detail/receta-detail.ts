@@ -24,6 +24,7 @@ export class RecetaDetail implements OnInit {
 
   isLogged: boolean = false;
   favoritosIds = new Set<string>();
+  mostrarFormulario = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -93,27 +94,32 @@ export class RecetaDetail implements OnInit {
       this.favoritosIds.clear();
     });
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('ID de la receta:', id);
 
     if (id) {
-      // Obtenemos todas las recetas
-      this.recetasService.getRecetas().subscribe((todasLasRecetas: Receta[]) => {
-        this.recetaSeleccionada = todasLasRecetas.find((r: Receta) => r._id === id);
-        console.log('Receta encontrada:', this.recetaSeleccionada);
-        this.actualizarEstadoFavorita();
+      this.cargarRecetaDetalle(id);
+    }
+  }
 
-        if (this.recetaSeleccionada) {
-          // Obtenemos todos los productos desde el servicio
-          this.productosService.getProductos().subscribe((todosLosProductos: Producto[]) => {
-            // Filtramos los productos que corresponden a los ingredientes de la receta
-            this.ingredientesSeleccionados = this.recetaSeleccionada!.ingredientes.map(
-              (ingredienteId) => todosLosProductos.find((p: Producto) => p._id === ingredienteId),
-            ).filter((p): p is Producto => !!p);
+  private cargarRecetaDetalle(id: string): void {
+    this.recetasService.getRecetas().subscribe((todasLasRecetas: Receta[]) => {
+      this.recetaSeleccionada = todasLasRecetas.find((r: Receta) => r._id === id);
 
-            console.log('Ingredientes (productos) encontrados:', this.ingredientesSeleccionados);
-          });
-        }
-      });
+      if (this.recetaSeleccionada) {
+        this.productosService.getProductos().subscribe((todosLosProductos: Producto[]) => {
+          this.ingredientesSeleccionados = this.recetaSeleccionada!.ingredientes.map(
+            (ingredienteId) => todosLosProductos.find((p: Producto) => p._id === ingredienteId),
+          ).filter((p): p is Producto => !!p);
+        });
+      }
+    });
+  }
+
+  onFormularioCerrado(): void {
+    this.mostrarFormulario = false;
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.cargarRecetaDetalle(id);
     }
   }
 
@@ -236,6 +242,4 @@ export class RecetaDetail implements OnInit {
       });
     }
   }
-
-  mostrarFormulario = false;
 }
